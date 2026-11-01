@@ -16,6 +16,8 @@ Python tooling to analyse the Swarm Traces release (redacted.jsonl.gz) from the 
    - record counts, family sizes, controller name mentions
 3. python -m swarmattr.cli feasibility data/redacted.jsonl.gz --min-chars 200 --min-n 8
    - per controller feature means and separation ratio
+4. python -m swarmattr.cli signed data/redacted.jsonl.gz --out ../notes/g236-signed.jsonl
+   - the 28 records tagged g236-command, written outside the repo
 
 **MODULES**
 

@@ -1,6 +1,7 @@
-"""summarise PATH      corpus stats
-feasibility PATH    per controller feature means and separation ratio
-selftest            synthetic end to end run
+"""summarise PATH             corpus stats
+feasibility PATH           per controller feature means and separation ratio
+signed PATH --out FILE     write the g236-command records to FILE, in tag order
+selftest                   synthetic end to end run
 """
 
 from __future__ import annotations
@@ -13,7 +14,7 @@ from pathlib import Path
 
 from . import __version__
 from .loader import (load_records, build_families, families_as_payloads,
-                     label_controllers, summarise, Payload)
+                     label_controllers, summarise, is_signed_command, Payload)
 from .features import feature_matrix, structural_features, FEATURE_NAMES, CLUSTER_FEATURES
 from .cluster import cluster, cluster_repeated, score_against_truth
 from .adversary import perturb
@@ -74,6 +75,18 @@ def cmd_feasibility(args):
     print(f"\nFeatures with separation >= 1.0: {strong} of {len(FEATURE_NAMES)}")
 
 
+def cmd_signed(args):
+    recs = [r for r in load_records(args.path) if is_signed_command(r)]
+    recs.sort(key=lambda r: (r.tags, r.rec_id))
+    with open(args.out, "w", encoding="utf-8") as fh:
+        for r in recs:
+            fh.write(json.dumps({"id": r.rec_id, "kind": r.kind, "parent_id": r.parent_id,
+                                 "tags": r.tags, "chars": len(r.text), "text": r.text}) + "\n")
+    print(len(recs), "records ->", args.out)
+    for r in recs:
+        print(f"  {r.rec_id}  {r.kind:<15} {len(r.text):>6}  {r.tags}")
+
+
 def cmd_selftest(args):
     print(f"swarmattr {__version__} selftest\n")
     with tempfile.TemporaryDirectory() as td:
@@ -107,6 +120,8 @@ def main(argv=None):
     f = sub.add_parser("feasibility"); f.add_argument("path"); f.add_argument("--limit", type=int)
     f.add_argument("--min-chars", type=int, default=200); f.add_argument("--min-n", type=int, default=5)
     f.set_defaults(func=cmd_feasibility)
+    g = sub.add_parser("signed"); g.add_argument("path"); g.add_argument("--out", required=True)
+    g.set_defaults(func=cmd_signed)
     t = sub.add_parser("selftest"); t.add_argument("--n", type=int, default=60)
     t.set_defaults(func=cmd_selftest)
     args = ap.parse_args(argv)
