@@ -36,7 +36,14 @@ Python tooling to analyse the Swarm Traces release (redacted.jsonl.gz) from the 
 
 **PRIOR WORK**
 
-Built before the Apart Research Swarm Alignment Hackathon (6 to 8 Nov 2026). Everything committed before 6 Nov is prior work and is declared as such in the submission. Pre-sprint runs on the real data were limited to summarise and feasibility (descriptive statistics). No clustering, actor count, perturbation or graph result on the real data exists before the sprint.
+Built before the Apart Research Swarm Alignment Hackathon (6 to 8 Nov 2026). Everything committed before 6 Nov is prior work and is declared as such in the submission. Runs on the real data before the sprint, all recorded here:
+
+1. summarise and feasibility (descriptive statistics, per controller feature means)
+2. signed chain check, 1 Nov: the 27 G236 signed-command families (200 chars or more) are tighter in feature space than length-matched random samples (mean pairwise distance 2.10 vs 5.80, sd 0.97, 200 samples)
+3. labelled subset check, 1 Nov: on the 391 families that name exactly one known controller, a random forest on the clustering features identifies the controller at 79 percent accuracy, 5-fold, against a 30 percent majority baseline; blind HDBSCAN on the same rows does not recover the controllers (adjusted Rand below 0.06)
+4. blind HDBSCAN on all 53,405 families of 200 chars or more groups by payload type (json, html, code), not by actor
+
+No actor count, calibration, perturbation curve or coordination graph result on the real data exists before the sprint.
 
 **LICENSE**
 

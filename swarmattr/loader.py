@@ -3,7 +3,7 @@
 Schema (confirmed against the release, 25 Oct 2026):
     id, cite, kind (payload | response | recovered_text), parent_id, tags, text, time_utc
 time_utc is empty on every record. There is no agent name field.
-A family is a payload plus its recovered_text children.
+A family is a payload (or a parentless recovered_text) plus its recovered_text children.
 """
 
 from __future__ import annotations
@@ -114,22 +114,21 @@ def build_families(records: list[Record]) -> list[Family]:
 
     by_id = {r.rec_id: r for r in records}
     fams: dict[str, Family] = {}
+    # roots: every payload, plus any recovered_text with no parent (32,827 in the release)
     for r in records:
-        if r.kind == "payload":
+        if r.kind == "payload" or (r.kind == "recovered_text" and not r.parent_id):
             fams[r.rec_id] = Family(root=r)
     for r in records:
-        if r.kind == "payload" or not r.parent_id:
+        if r.rec_id in fams or not r.parent_id:
             continue
         p = by_id.get(r.parent_id)
         seen = 0
-        while p is not None and p.kind != "payload" and p.parent_id and seen < 5:
+        while p is not None and p.rec_id not in fams and p.parent_id and seen < 5:
             p = by_id.get(p.parent_id)
             seen += 1
-        if p is None or p.kind != "payload":
+        if p is None or p.rec_id not in fams:
             continue
-        fam = fams.get(p.rec_id)
-        if fam is None:
-            continue
+        fam = fams[p.rec_id]
         if r.kind == "recovered_text":
             fam.children.append(r)
         elif r.kind == "response":
@@ -213,4 +212,6 @@ def summarise(records: list[Record]) -> dict:
         "families_ge_500_chars": sum(1 for L in lens if L >= 500),
         "controller_family_counts": dict(sorted(ctrl.items(), key=lambda kv: -kv[1])),
         "signed_command_records": sum(1 for r in records if is_signed_command(r)),
+        "signed_command_families": sum(1 for f in fams if is_signed_command(f)),
+        "root_kinds": dict(sorted(((k, sum(1 for f in fams if f.root.kind == k)) for k in set(f.root.kind for f in fams)))),
     }

@@ -32,9 +32,13 @@ class RepeatResult:
         }
 
 
-def _scale(X):
+def _scale(X, min_std: float = 1e-3):
+    # drop near-constant columns first; a few outliers in a dead column otherwise dominate distances
+    import numpy as np
     from sklearn.preprocessing import StandardScaler
-    return StandardScaler().fit_transform(X)
+    X = np.asarray(X, dtype=float)
+    keep = X.std(axis=0) > min_std
+    return StandardScaler().fit_transform(X[:, keep])
 
 
 def cluster(X, method: str = "hdbscan", min_cluster_size: int = 5, min_samples: int | None = None) -> ClusterResult:
