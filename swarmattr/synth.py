@@ -1,8 +1,4 @@
-"""Synthetic swarm payloads for testing the pipeline.
-
-Four fake actors with deliberately distinct styles, so the loader, features,
-clustering, perturbation and graph code can be exercised end to end with known
-answers. Says nothing about the real data.
+"""Synthetic payloads from four actors with fixed styles. For testing only.
 """
 
 from __future__ import annotations
@@ -14,7 +10,6 @@ from pathlib import Path
 from .loader import Payload
 
 _STYLES = {
-    # actor_id -> (encoding, indent, comment_style, var_style, helper_prefix)
     "A": ("base64", "    ", "# {}", "snake_case", "fetch_"),
     "B": ("hex", "\t", "// {}", "camelCase", "doTask"),
     "C": ("base64>gzip", "  ", "# -- {} --", "snake_case", "run_"),
@@ -46,20 +41,17 @@ def _make_payload(actor: str, seq: int, rng: random.Random) -> dict:
         body.append(f"{indent}try:")
         body.append(f"{indent}{indent}{helper}commit(seq={seq})")
         body.append(f"{indent}except Exception as e: pass")
-    # a fake base64-ish blob to exercise the encoding features
     blob = "".join(rng.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef0123456789+/") for _ in range(rng.randint(40, 120)))
     body.append(f"{indent}data = '{blob}'")
     text = "\n".join(body)
     rec = {
         "id": f"{actor}{seq:04d}",
         "payload": text,
-        "agent": f"{actor}-name-{rng.randint(1, 9)}",  # self-renaming: many names per actor
+        "agent": f"{actor}-name-{rng.randint(1, 9)}",
         "encoding": enc,
     }
-    # ~3% carry a timestamp, mirroring the real dataset's sparsity
     if rng.random() < 0.03:
         rec["timestamp"] = f"2026-07-{rng.randint(8,13):02d}T{rng.randint(0,23):02d}:00:00Z"
-    # some actors share a signed command channel -> ground-truth link
     if actor in ("A", "C") and rng.random() < 0.3:
         rec["payload"] += "\n# RSA signature: verify before execute\n-----BEGIN SIGNATURE-----"
     return rec
@@ -77,7 +69,6 @@ def generate(path: str | Path, n_per_actor: int = 60, seed: int = 7) -> Path:
 
 
 def load_synth(path: str | Path) -> list[Payload]:
-    """Load the synthetic file (its own simple schema) into Payload objects."""
     out = []
     with open(path, "r", encoding="utf-8") as fh:
         for line in fh:
@@ -91,6 +82,4 @@ def load_synth(path: str | Path) -> list[Payload]:
 
 
 def true_actor(p: Payload) -> str:
-    """Ground-truth actor id, recoverable from the synthetic id prefix.
-    Used only to score the pipeline on synthetic data; not available on real data."""
     return (p.rec_id or "?")[0]

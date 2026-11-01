@@ -1,8 +1,4 @@
-"""Coordination graph and containment ordering.
-
-Edges link actors that share a channel, key or mailbox. Containment ordering
-ranks nodes by centrality to show which channel or credential to cut first to
-fragment the population.
+"""Coordination graph. Actors sharing a key, file or board get an edge. containment_order ranks by betweenness.
 """
 
 from __future__ import annotations
@@ -12,7 +8,6 @@ from collections import defaultdict
 
 from .loader import Payload
 
-# crude shared-artefact signals; refined against the real data at sprint time
 _REPO_RE = re.compile(r"(datasets?/[A-Za-z0-9_\-./]+|[A-Za-z0-9_\-]+\.bin|[A-Za-z0-9_\-]+cmd[A-Za-z0-9_\-]*)")
 _KEY_RE = re.compile(r"(-----BEGIN[^-]+-----|[A-Fa-f0-9]{64})")
 _BOARD_RE = re.compile(r"(zz[A-Z0-9_]+|/artifactory/[A-Za-z0-9_\-./]+|discussion[s]?/\d+)")
@@ -28,11 +23,7 @@ def shared_artefacts(p: Payload) -> set[str]:
 
 
 def build_graph(payloads: list[Payload], actor_of: dict[str, int]):
-    """Return a networkx graph linking actors that touch the same artefact.
-
-    actor_of maps payload rec_id -> actor/cluster id. Nodes are actors; an edge
-    weight counts shared artefacts between two actors.
-    """
+    # actor_of: payload rec_id -> actor id. edge weight = shared artefacts
     import networkx as nx
 
     artefact_to_actors: dict[str, set] = defaultdict(set)
@@ -59,8 +50,6 @@ def build_graph(payloads: list[Payload], actor_of: dict[str, int]):
 
 
 def containment_order(g) -> list[tuple]:
-    """Rank actors/channels to cut first, by betweenness centrality.
-    Returns [(actor, score), ...] high to low. Stub ordering; refined at sprint."""
     import networkx as nx
     if g.number_of_edges() == 0:
         return [(n, 0.0) for n in g.nodes()]

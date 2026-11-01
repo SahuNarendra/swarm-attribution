@@ -1,42 +1,27 @@
-# data/
+Place redacted.jsonl.gz here. It is ignored by git.
 
-The Swarm Traces release is downloaded here locally and NOT committed. See
-`../DOWNLOAD.md`.
+**SCHEMA**
 
-Expected file: `redacted.jsonl.gz` (one JSON object per line).
+1. id - record id, e.g. R0000001
+2. cite - id plus hash
+3. kind - payload, response or recovered_text
+4. parent_id - parent record id or null
+5. tags - semicolon separated, sparse (34 distinct), e.g. article-evidence;g236-command;g23619cmd.bin;command-000001
+6. text - decoded content
+7. time_utc - empty on every record
 
-## Schema (CONFIRMED against the release, 25 Oct 2026)
+payload is the root. recovered_text children are the decoded inner code (42,707 linked). response children are what came back (18,417 linked). A family is a payload plus its recovered_text children (loader.build_families). There is no agent name field, names are inside text and tags.
 
-    id          "R0000001"   stable record id
-    cite        "R0000001:865502a6"
-    kind        "payload" | "response" | "recovered_text"
-    parent_id   id of the parent record, or null
-    tags        ";"-separated labels, sparse (34 distinct); e.g.
-                "article-evidence;g236-command;g23619cmd.bin;command-000001"
-    text        decoded content
-    time_utc    EMPTY on every record
+**COUNTS**
 
-Structure: payload is the root. recovered_text children (42,707 linked) are the
-decoded inner code of a payload; response children (18,417 linked) are what
-came back. A payload FAMILY = payload + its recovered_text children; this is the
-unit for style analysis (see loader.build_families).
+1. 189,579 records: 91,037 payload, 75,534 recovered_text, 23,008 response
+2. 91,037 families. 45,028 with 200 chars or more, 20,897 with 500 or more. Median 193 chars, p90 1,059, p99 6,242
+3. 28 records tagged g236-command (g23619cmd.bin 17 commands, g23619scmd.bin child controller)
 
-There is NO agent-name field. Controller names live inside text and tags.
+**IDENTITY ANCHORS**
 
-## Counts
+1. g236-command tags
+2. shared keys or signatures across chains
+3. controller self identification in headers
 
-- 189,579 records; 91,037 payload families; 45,028 families >= 200 chars,
-  20,897 >= 500 chars. Median family 193 chars, p90 1,059, p99 6,242.
-- 28 records tagged as G236's verified signed command chain (two files:
-  g23619cmd.bin 17 commands, g23619scmd.bin child controller).
-
-## Ground-truth anchors
-
-Trustworthy identity signals, in order of trust:
-1. Investigator tags for the signed command chain (`g236-command`).
-2. Shared keys / signatures across chains (detect in text at sprint time).
-3. Controller self-identification in commits/headers.
-
-Name MENTIONS are not ground truth: a payload can mention a controller it was
-sent to or about. The pre-sprint feasibility check used mentions as a rough
-label and flagged this leakage.
+Name mentions are not ground truth. A payload can mention a controller it was sent to.

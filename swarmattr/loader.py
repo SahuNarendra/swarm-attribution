@@ -1,23 +1,9 @@
-"""Load Swarm Traces records from redacted.jsonl.gz.
+"""Swarm Traces loader.
 
-REAL SCHEMA (confirmed 25 Oct 2026 against the release, 189,579 records):
-    id          "R0000001"  stable record id
-    cite        "R0000001:865502a6"
-    kind        "payload" | "response" | "recovered_text"
-    parent_id   id of the parent record, or null
-    tags        ";"-separated labels, sparse (34 distinct), e.g.
-                "article-evidence;g236-command;g23619cmd.bin;command-000001"
-    text        the decoded content
-    time_utc    EMPTY on every record. Timing features are dead for this data.
-
-Structure: payload is the root. recovered_text children are the decoded inner
-code of a payload (42,707 of them); response children are what came back
-(18,417). A payload FAMILY = payload + its recovered_text children, which is the
-code the agent actually wrote and the right unit for style analysis.
-
-There is NO agent-name field. Names live inside text (headers, comments). We
-label by known controller names (case-insensitive) and by the investigators'
-tags (the G236 signed command chain is tagged explicitly).
+Schema (confirmed against the release, 25 Oct 2026):
+    id, cite, kind (payload | response | recovered_text), parent_id, tags, text, time_utc
+time_utc is empty on every record. There is no agent name field.
+A family is a payload plus its recovered_text children.
 """
 
 from __future__ import annotations
@@ -49,7 +35,6 @@ class Record:
 
 @dataclass
 class Family:
-    """A payload plus its decoded children: the unit of style analysis."""
     root: Record
     children: list[Record] = field(default_factory=list)
     responses: list[Record] = field(default_factory=list)
@@ -60,7 +45,6 @@ class Family:
 
     @property
     def text(self) -> str:
-        """Root text plus all decoded child text, in id order."""
         parts = [self.root.text or ""]
         parts += [c.text or "" for c in sorted(self.children, key=lambda r: r.rec_id)]
         return "\n".join(parts)
@@ -74,8 +58,6 @@ class Family:
         return len(self.text)
 
 
-# Backwards-compatible alias used by features/adversary (they only need
-# .rec_id, .text, and optionally .encoding/.name/.timestamp).
 @dataclass
 class Payload:
     rec_id: str
@@ -129,7 +111,7 @@ def load_records(path: str | Path, limit: Optional[int] = None) -> list[Record]:
 
 
 def build_families(records: list[Record]) -> list[Family]:
-    """Group records into payload families by parent_id."""
+
     by_id = {r.rec_id: r for r in records}
     fams: dict[str, Family] = {}
     for r in records:
@@ -139,7 +121,6 @@ def build_families(records: list[Record]) -> list[Family]:
         if r.kind == "payload" or not r.parent_id:
             continue
         p = by_id.get(r.parent_id)
-        # walk up to the payload root (recovered_text -> recovered_text -> payload exists once)
         seen = 0
         while p is not None and p.kind != "payload" and p.parent_id and seen < 5:
             p = by_id.get(p.parent_id)
@@ -157,7 +138,7 @@ def build_families(records: list[Record]) -> list[Family]:
 
 
 def families_as_payloads(fams: list[Family], min_chars: int = 0) -> list[Payload]:
-    """Adapter: Family -> Payload objects the feature code consumes."""
+
     out = []
     for f in fams:
         if f.n_chars < min_chars:
@@ -168,16 +149,12 @@ def families_as_payloads(fams: list[Family], min_chars: int = 0) -> list[Payload
     return out
 
 
-# --- controller labelling ---------------------------------------------------
-
-# Known controller / agent names from the Swarm Traces report. Case-insensitive.
-# A family is labelled with a controller if the name appears in its text or tags.
+# controller names from the Swarm Traces report
 KNOWN_CONTROLLERS = [
     "G236", "G23619", "OTS92", "BE90", "SC4", "LIBR11", "Future9180",
     "MARB051", "PHASEONE", "WT8592", "US58", "D64LINK", "sc4tiny",
 ]
 
-# Collapse aliases to one canonical label.
 _CANON = {"g23619": "G236", "sc4tiny": "SC4"}
 
 
@@ -187,7 +164,6 @@ def label_controllers(text: str, tags: str = "") -> list[str]:
     for nm in KNOWN_CONTROLLERS:
         if nm.lower() in hay:
             found.append(_CANON.get(nm.lower(), nm))
-    # dedupe, keep order
     seen, out = set(), []
     for x in found:
         if x not in seen:
@@ -197,12 +173,10 @@ def label_controllers(text: str, tags: str = "") -> list[str]:
 
 
 def is_signed_command(rec_or_fam) -> bool:
-    """True for records the investigators tagged as a verified signed command."""
+
     tags = getattr(rec_or_fam, "tags", "") or ""
     return "g236-command" in tags.lower()
 
-
-# --- corpus summary ----------------------------------------------------------
 
 def summarise(records: list[Record]) -> dict:
     kinds = defaultdict(int)

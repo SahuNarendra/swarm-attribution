@@ -1,76 +1,41 @@
-# swarm-attribution (swarmattr)
+# swarm-attribution
 
-**Instance-level actor attribution for agent-swarm artefacts.**
+Python tooling to analyse the Swarm Traces release (redacted.jsonl.gz) from the July 2026 Hugging Face incident. Groups payloads into families, extracts code-style features, clusters them into actors, and builds a coordination graph.
 
-Scaffolding for the Apart Research Swarm Alignment Hackathon (6 to 8 Nov 2026),
-Tracks 3 (agent identity and infrastructure) and 4 (oversight and forensics).
-Everything committed before 6 Nov is declared prior work; see `PRIOR_WORK.md`.
+**SETUP**
 
-## The question
+1. Python 3.10 or later
+2. pip install -r requirements.txt
+3. Download redacted.jsonl.gz from https://swarmtraces.org/data/final/ and save it as data/redacted.jsonl.gz (not committed, see .gitignore)
 
-In the July 2026 Hugging Face incident, ~1,200 instances of a single model
-coordinated and renamed themselves; the Swarm Traces release has 7,905 agent
-names for ~1,200 agents and states it cannot tell how many agents were behind
-the activity. Existing fingerprinting identifies the MODEL (one answer for all
-7,905 names). The open problem is INSTANCE-level: how many actors, and which
-artefacts belong to each, when every actor is the same model with a fake name.
+**COMMANDS**
 
-## What this repo does
+1. python -m swarmattr.cli selftest
+   - end to end run on synthetic data, no dataset needed
+2. python -m swarmattr.cli summarise data/redacted.jsonl.gz
+   - record counts, family sizes, controller name mentions
+3. python -m swarmattr.cli feasibility data/redacted.jsonl.gz --min-chars 200 --min-n 8
+   - per controller feature means and separation ratio
 
-A pipeline, tested on synthetic data, to be run on the real data at the sprint:
+**MODULES**
 
-- `loader.py`     read redacted.jsonl(.gz), pinned to the release schema;
-                  payload-family assembly; controller labelling; `summarise()`
-- `features.py`   structural + stylistic features per payload (encoding, chunking,
-                  naming, comments, error-handling, controller tokens, helpers)
-- `synth.py`      synthetic swarm payloads to TEST the plumbing (not a result)
-- `cluster.py`    K-free clustering harness (HDBSCAN or silhouette sweep) and a
-                  synthetic-only scorer
-- `adversary.py`  style-perturbation generator for the robustness curve
-- `graph.py`      coordination graph + containment ordering (also the fallback)
-- `cli.py`        `summarise`, `feasibility`, `selftest`
+1. swarmattr/loader.py - read records, build payload families, controller labels, corpus summary
+2. swarmattr/features.py - 22 structural and stylistic features per payload
+3. swarmattr/synth.py - synthetic payloads with known actors, for testing
+4. swarmattr/cluster.py - HDBSCAN or agglomerative clustering, synthetic scorer
+5. swarmattr/adversary.py - style perturbation for the robustness test
+6. swarmattr/graph.py - coordination graph and containment ordering
+7. swarmattr/cli.py - entry point
 
-## Quick start
+**DATA**
 
-```
-pip install -r requirements.txt
-python -m swarmattr.cli selftest          # proves the pipeline runs (synthetic)
-```
+1. Schema and counts in data/README.md
+2. Dataset stays under the Swarm Traces release terms. Redacted entities are not to be re-identified.
 
-Then get the dataset (see `DOWNLOAD.md`) and run:
+**PRIOR WORK**
 
-```
-python -m swarmattr.cli summarise data/redacted.jsonl.gz
-python -m swarmattr.cli feasibility data/redacted.jsonl.gz --min-chars 200 --min-n 8
-```
+Built before the Apart Research Swarm Alignment Hackathon (6 to 8 Nov 2026). Everything committed before 6 Nov is prior work and is declared as such in the submission. Pre-sprint runs on the real data were limited to summarise and feasibility (descriptive statistics). No clustering, actor count, perturbation or graph result on the real data exists before the sprint.
 
-## Method (executed at the sprint, not before)
+**LICENSE**
 
-1. Featurise each payload.
-2. Cluster without a fixed K -> actor count with a confidence interval.
-3. Calibrate against signed command chains and shared keys (ground truth).
-4. Perturb style and measure the attribution-failure curve.
-5. Coordination graph + containment ordering (which channel to cut first).
-
-## Data limits inherited (see data/README.md)
-
-No record carries a timestamp (timing features are unusable); about 80% of the
-material is outbound only; usernames, repositories, credentials and the
-shortener are redacted; there is no agent-name field, names live inside text.
-
-## Fallback
-
-If style signal does not survive redaction, the same loader + `graph.py` deliver
-a coordination-graph reconstruction (who talked to whom, through which channel)
-with the containment-ordering result intact.
-
-## Dual use
-
-The same features that regroup rogue agents deanonymise benign multi-agent
-deployments. Mitigation is the shift from inference to verification (attested
-identity). Full analysis in the report appendix.
-
-## Licence
-
-Apache-2.0 for code. Dataset remains under the Swarm Traces release terms and is
-not included here.
+Apache-2.0

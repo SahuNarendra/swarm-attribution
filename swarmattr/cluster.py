@@ -1,7 +1,4 @@
-"""Clustering and actor-count harness.
-
-Infers the number of actors from the feature matrix rather than taking a fixed K.
-On synthetic data the result can be scored against the known actor labels.
+"""Clustering without a fixed K. HDBSCAN if installed, else agglomerative with silhouette sweep.
 """
 
 from __future__ import annotations
@@ -19,12 +16,6 @@ class ClusterResult:
 
 
 def cluster(X, method: str = "auto", min_cluster_size: int = 5) -> ClusterResult:
-    """Cluster feature rows into inferred actors.
-
-    method="auto": use HDBSCAN if installed (infers K, marks noise as -1),
-    else fall back to a simple K-free agglomerative sweep picking the K with the
-    best silhouette. Both are standard; the choice is recorded for the report.
-    """
     import numpy as np
     from sklearn.preprocessing import StandardScaler
 
@@ -41,7 +32,6 @@ def cluster(X, method: str = "auto", min_cluster_size: int = 5) -> ClusterResult
         except Exception:
             if method == "hdbscan":
                 raise
-            # fall through to agglomerative
 
     from sklearn.cluster import AgglomerativeClustering
     from sklearn.metrics import silhouette_score
@@ -65,8 +55,6 @@ def cluster(X, method: str = "auto", min_cluster_size: int = 5) -> ClusterResult
 
 
 def score_against_truth(labels: list[int], truth: list[str]) -> dict:
-    """Synthetic-only: how well do inferred clusters match known actors?
-    Uses adjusted Rand index and homogeneity. Not valid on real data (no truth)."""
     from sklearn.metrics import (adjusted_rand_score, homogeneity_score,
                                  completeness_score)
     return {

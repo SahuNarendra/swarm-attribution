@@ -1,12 +1,6 @@
-"""Command-line entry point for the swarmattr pipeline.
-
-  summarise PATH            corpus stats on the real schema (feasibility read)
-  feasibility PATH          per-controller feature spread (the go/no-go check)
-  selftest                  synthetic end-to-end plumbing test
-
-summarise/feasibility are DESCRIPTIVE (counts, means, spreads). They are the
-declared pre-sprint feasibility check, not clustering or an actor count. The
-research results are produced at the sprint.
+"""summarise PATH      corpus stats
+feasibility PATH    per controller feature means and separation ratio
+selftest            synthetic end to end run
 """
 
 from __future__ import annotations
@@ -47,13 +41,12 @@ def cmd_feasibility(args):
             continue
         labels = label_controllers(f.text, f.tags)
         if len(labels) != 1:
-            continue  # skip unlabelled and multi-controller families for a clean read
+            continue
         groups.setdefault(labels[0], []).append(
             structural_features(Payload(rec_id=f.rec_id, text=f.text)))
     groups = {k: v for k, v in groups.items() if len(v) >= args.min_n}
     if not groups:
         print("No controller groups met the thresholds."); return
-    # per-feature: between-group spread of means vs within-group std (a crude F-like ratio)
     report = {}
     for tag, rows in groups.items():
         M = np.array([[r[n] for n in FEATURE_NAMES] for r in rows], dtype=float)
@@ -70,7 +63,6 @@ def cmd_feasibility(args):
     print(f"Feasibility check: {len(groups)} controller groups, families >= {min_chars} chars, n >= {args.min_n}")
     print("groups:", {t: report[t]["n"] for t in report})
     print("\nSeparation ratio per feature (spread of group means / mean within-group std).")
-    print("Above ~1.0 = the feature separates controllers more than it varies inside one.")
     for n, s in top:
         print(f"  {s:6.2f}  {n}")
     print("\nTop 6 features, mean by controller:")
@@ -83,7 +75,7 @@ def cmd_feasibility(args):
 
 
 def cmd_selftest(args):
-    print(f"swarmattr {__version__} selftest (synthetic data only)\n")
+    print(f"swarmattr {__version__} selftest\n")
     with tempfile.TemporaryDirectory() as td:
         path = synth.generate(Path(td) / "synth.jsonl", n_per_actor=args.n)
         payloads = synth.load_synth(path)
@@ -100,7 +92,7 @@ def cmd_selftest(args):
         actor_of = {p.rec_id: synth.true_actor(p) for p in payloads}
         g = build_graph(payloads, actor_of)
         print(f"5. graph {g.number_of_nodes()} nodes {g.number_of_edges()} edges; order {containment_order(g)[:3]}")
-    print("\nOK: pipeline runs end to end on synthetic data.")
+    print("\nok")
 
 
 def main(argv=None):

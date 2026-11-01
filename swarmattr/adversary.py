@@ -1,8 +1,4 @@
-"""Style-perturbation generator for the robustness experiment.
-
-Given a payload, produce a disguised variant: rename variables, strip comments,
-change indentation, strip controller tokens. Perturbation strength is swept to
-measure how quickly attribution degrades.
+"""Style perturbation: rename variables, reindent, strip comments, strip controller tokens. strength 0 to 1.
 """
 
 from __future__ import annotations
@@ -34,7 +30,6 @@ def _strip_comments(text: str) -> str:
 
 
 def _reindent(text: str, rng: random.Random) -> str:
-    # swap 4-space indents to tabs or 2-space, as another actor might
     target = rng.choice(["\t", "  "])
     return re.sub(r"^    ", target, text, flags=re.M)
 
@@ -44,8 +39,6 @@ def _strip_controllers(text: str) -> str:
 
 
 def perturb(p: Payload, strength: float, seed: int = 0) -> Payload:
-    """Return a disguised copy of p. strength in [0,1] scales how many
-    transformations are applied."""
     rng = random.Random(hash((p.rec_id, seed)) & 0xFFFFFFFF)
     text = p.text or ""
     ops = []
