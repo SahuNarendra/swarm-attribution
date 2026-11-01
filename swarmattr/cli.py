@@ -17,7 +17,7 @@ from .loader import (load_records, build_families, families_as_payloads,
 from .features import feature_matrix, structural_features, FEATURE_NAMES, CLUSTER_FEATURES
 from .cluster import cluster, cluster_repeated, score_against_truth
 from .adversary import perturb
-from .graph import build_graph, containment_order
+from .graph import build_graph, containment_order, actor_projection
 from . import synth
 
 
@@ -93,7 +93,9 @@ def cmd_selftest(args):
             print(f"4. perturb {s:.2f}: len {len(p0.text)} -> {len(perturb(p0, s).text)}")
         actor_of = {p.rec_id: synth.true_actor(p) for p in payloads}
         g = build_graph(payloads, actor_of)
-        print(f"5. graph {g.number_of_nodes()} nodes {g.number_of_edges()} edges; order {containment_order(g)[:3]}")
+        ap = actor_projection(g)
+        print(f"5. graph {g.number_of_nodes()} nodes {g.number_of_edges()} edges; actor projection {ap.number_of_edges()} edges")
+        print("   cut first:", containment_order(g)[:3])
     print("\nok")
 
 

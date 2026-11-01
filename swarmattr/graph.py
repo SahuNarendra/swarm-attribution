@@ -1,4 +1,4 @@
-"""Coordination graph. Actors sharing a key, file or board get an edge. containment_order ranks by betweenness.
+"""Coordination graph. Bipartite actor to artefact (key, file, board). containment_order ranks artefacts by how much removing each one fragments the actors.
 """
 
 from __future__ import annotations
@@ -23,35 +23,59 @@ def shared_artefacts(p: Payload) -> set[str]:
 
 
 def build_graph(payloads: list[Payload], actor_of: dict[str, int]):
-    # actor_of: payload rec_id -> actor id. edge weight = shared artefacts
+    # bipartite: actor nodes (kind=actor) and artefact nodes (kind=artefact)
     import networkx as nx
 
-    artefact_to_actors: dict[str, set] = defaultdict(set)
+    g = nx.Graph()
+    for a in set(actor_of.values()):
+        g.add_node(("actor", a), kind="actor")
     for p in payloads:
         a = actor_of.get(p.rec_id)
         if a is None:
             continue
         for art in shared_artefacts(p):
-            artefact_to_actors[art].add(a)
-
-    g = nx.Graph()
-    g.add_nodes_from(set(actor_of.values()))
-    for art, actors in artefact_to_actors.items():
-        actors = list(actors)
-        for i in range(len(actors)):
-            for j in range(i + 1, len(actors)):
-                u, v = actors[i], actors[j]
-                if g.has_edge(u, v):
-                    g[u][v]["weight"] += 1
-                    g[u][v]["artefacts"].add(art)
-                else:
-                    g.add_edge(u, v, weight=1, artefacts={art})
+            n = ("artefact", art)
+            if n not in g:
+                g.add_node(n, kind="artefact")
+            if g.has_edge(("actor", a), n):
+                g[("actor", a)][n]["weight"] += 1
+            else:
+                g.add_edge(("actor", a), n, weight=1)
     return g
 
 
-def containment_order(g) -> list[tuple]:
+def actor_projection(g):
     import networkx as nx
-    if g.number_of_edges() == 0:
-        return [(n, 0.0) for n in g.nodes()]
+    actors = [n for n, d in g.nodes(data=True) if d.get("kind") == "actor"]
+    return nx.bipartite.weighted_projected_graph(g, actors)
+
+
+def _n_components(g, actors) -> int:
+    import networkx as nx
+    comps = 0
+    seen = set()
+    for a in actors:
+        if a in seen:
+            continue
+        comps += 1
+        seen.update(nx.node_connected_component(g, a))
+    return comps
+
+
+def containment_order(g) -> list[tuple]:
+    # for each artefact: components among actors after removing it, betweenness, degree
+    import networkx as nx
+    actors = [n for n, d in g.nodes(data=True) if d.get("kind") == "actor"]
+    arts = [n for n, d in g.nodes(data=True) if d.get("kind") == "artefact"]
+    if not arts:
+        return []
+    base = _n_components(g, actors)
     bc = nx.betweenness_centrality(g, weight="weight")
-    return sorted(bc.items(), key=lambda kv: kv[1], reverse=True)
+    rows = []
+    for n in arts:
+        h = g.copy()
+        h.remove_node(n)
+        gain = _n_components(h, actors) - base
+        rows.append((n[1], gain, round(bc[n], 4), g.degree(n)))
+    rows.sort(key=lambda r: (-r[1], -r[2], -r[3]))
+    return rows

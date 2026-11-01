@@ -24,7 +24,7 @@ Python tooling to analyse the Swarm Traces release (redacted.jsonl.gz) from the 
 3. swarmattr/synth.py - synthetic payloads with known actors, for testing
 4. swarmattr/cluster.py - HDBSCAN clustering, repeated-run interval, synthetic scorer
 5. swarmattr/adversary.py - style perturbation for the robustness test
-6. swarmattr/graph.py - coordination graph and containment ordering
+6. swarmattr/graph.py - actor to artefact graph, containment ordering by fragmentation
 7. swarmattr/cli.py - entry point
 
 **DATA**
