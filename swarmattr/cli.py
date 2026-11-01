@@ -14,8 +14,8 @@ from pathlib import Path
 from . import __version__
 from .loader import (load_records, build_families, families_as_payloads,
                      label_controllers, summarise, Payload)
-from .features import feature_matrix, structural_features, FEATURE_NAMES
-from .cluster import cluster, score_against_truth
+from .features import feature_matrix, structural_features, FEATURE_NAMES, CLUSTER_FEATURES
+from .cluster import cluster, cluster_repeated, score_against_truth
 from .adversary import perturb
 from .graph import build_graph, containment_order
 from . import synth
@@ -80,12 +80,14 @@ def cmd_selftest(args):
         path = synth.generate(Path(td) / "synth.jsonl", n_per_actor=args.n)
         payloads = synth.load_synth(path)
         print("1. loaded", len(payloads), "synthetic payloads")
-        X, names = feature_matrix(payloads)
+        X, names = feature_matrix(payloads, CLUSTER_FEATURES)
         print(f"2. feature matrix: {X.shape[0]} x {X.shape[1]}")
-        res = cluster(X, method="auto")
+        res = cluster(X)
         print(f"3. clustering: {res.method} inferred {res.n_clusters} ({res.notes})")
         truth = [synth.true_actor(p) for p in payloads]
         _print(score_against_truth(res.labels, truth))
+        rep = cluster_repeated(X, runs=10)
+        print("3b. repeated:", rep.summary())
         p0 = payloads[0]
         for s in (0.0, 0.5, 1.0):
             print(f"4. perturb {s:.2f}: len {len(p0.text)} -> {len(perturb(p0, s).text)}")

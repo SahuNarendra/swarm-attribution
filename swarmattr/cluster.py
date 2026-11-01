@@ -1,10 +1,9 @@
-"""Clustering without a fixed K. HDBSCAN if installed, else agglomerative with silhouette sweep.
+"""Clustering without a fixed K. HDBSCAN by default, agglomerative with silhouette sweep for small inputs.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Optional
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -15,23 +14,40 @@ class ClusterResult:
     notes: str = ""
 
 
-def cluster(X, method: str = "auto", min_cluster_size: int = 5) -> ClusterResult:
-    import numpy as np
+@dataclass
+class RepeatResult:
+    n_clusters: list[int] = field(default_factory=list)
+    noise_frac: list[float] = field(default_factory=list)
+
+    def summary(self) -> dict:
+        import numpy as np
+        a = np.asarray(self.n_clusters, dtype=float)
+        return {
+            "runs": len(a),
+            "n_clusters_mean": float(a.mean()) if len(a) else 0.0,
+            "n_clusters_std": float(a.std()) if len(a) else 0.0,
+            "n_clusters_min": int(a.min()) if len(a) else 0,
+            "n_clusters_max": int(a.max()) if len(a) else 0,
+            "noise_frac_mean": float(np.mean(self.noise_frac)) if self.noise_frac else 0.0,
+        }
+
+
+def _scale(X):
     from sklearn.preprocessing import StandardScaler
+    return StandardScaler().fit_transform(X)
 
-    Xs = StandardScaler().fit_transform(X)
 
-    if method in ("auto", "hdbscan"):
-        try:
-            import hdbscan  # type: ignore
-            cl = hdbscan.HDBSCAN(min_cluster_size=min_cluster_size)
-            labels = cl.fit_predict(Xs)
-            n = len(set(labels) - {-1})
-            return ClusterResult(labels.tolist(), n, "hdbscan",
-                                 f"noise={int((labels == -1).sum())}")
-        except Exception:
-            if method == "hdbscan":
-                raise
+def cluster(X, method: str = "hdbscan", min_cluster_size: int = 5, min_samples: int | None = None) -> ClusterResult:
+    import numpy as np
+    Xs = _scale(X)
+
+    if method == "hdbscan":
+        from sklearn.cluster import HDBSCAN
+        cl = HDBSCAN(min_cluster_size=min_cluster_size, min_samples=min_samples)
+        labels = cl.fit_predict(Xs)
+        n = len(set(labels.tolist()) - {-1})
+        noise = int((labels == -1).sum())
+        return ClusterResult(labels.tolist(), n, "hdbscan", f"noise={noise}")
 
     from sklearn.cluster import AgglomerativeClustering
     from sklearn.metrics import silhouette_score
@@ -50,8 +66,21 @@ def cluster(X, method: str = "auto", min_cluster_size: int = 5) -> ClusterResult
     if best is None:
         return ClusterResult([0] * n_samples, 1, "fallback", "degenerate")
     score, k, lab = best
-    return ClusterResult(lab.tolist(), k, "agglomerative",
-                         f"silhouette={score:.3f}")
+    return ClusterResult(lab.tolist(), k, "agglomerative", f"silhouette={score:.3f}")
+
+
+def cluster_repeated(X, runs: int = 20, frac: float = 0.8, seed: int = 0, **kw) -> RepeatResult:
+    import numpy as np
+    rng = np.random.default_rng(seed)
+    n = X.shape[0]
+    m = max(2, int(n * frac))
+    out = RepeatResult()
+    for _ in range(runs):
+        idx = rng.choice(n, size=m, replace=False)
+        r = cluster(X[idx], **kw)
+        out.n_clusters.append(r.n_clusters)
+        out.noise_frac.append(sum(1 for l in r.labels if l == -1) / m)
+    return out
 
 
 def score_against_truth(labels: list[int], truth: list[str]) -> dict:
