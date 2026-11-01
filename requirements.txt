@@ -1,0 +1,5 @@
+numpy>=1.26
+scikit-learn>=1.4
+networkx>=3.2
+# Optional, better clustering if present. Code falls back to scikit-learn if missing.
+# hdbscan>=0.8.33

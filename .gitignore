@@ -1,0 +1,10 @@
+# never commit the dataset or anything derived from it
+data/*
+!data/README.md
+*.csv
+*.pkl
+*.npy
+__pycache__/
+*.pyc
+.venv/
+.DS_Store
