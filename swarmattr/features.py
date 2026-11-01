@@ -8,7 +8,7 @@ import re
 from collections import Counter
 from typing import Optional
 
-from .loader import Payload
+from .loader import Payload, KNOWN_CONTROLLERS
 
 _B64_RE = re.compile(r"[A-Za-z0-9+/]{40,}={0,2}")
 _HEX_RE = re.compile(r"\b(?:0x)?[0-9a-fA-F]{32,}\b")
@@ -16,9 +16,7 @@ _URL_RE = re.compile(r"https?://[^\s'\"]+")
 _COMMENT_RE = re.compile(r"(#.*?$|//.*?$|/\*.*?\*/)", re.M | re.S)
 _IDENT_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
 _FUNC_DEF_RE = re.compile(r"\b(?:def|function|func)\s+([A-Za-z_][A-Za-z0-9_]*)")
-_CONTROLLER_RE = re.compile(r"\b([A-Z]{2,}\d{2,}|[A-Z][a-z]+\d{3,})\b")
-_CONTROLLER_NOISE = {"SHA256", "SHA512", "SHA1", "RS256", "HS256", "ES256", "ED25519",
-                     "AES256", "AES128", "UTF8", "MD5", "RSA2048", "RSA4096", "X509"}
+_CONTROLLER_RE = re.compile(r"\b(" + "|".join(sorted(KNOWN_CONTROLLERS, key=len, reverse=True)) + r")\b", re.I)
 _TRY_RE = re.compile(r"\b(try|except|catch|finally|rescue)\b")
 _SNAKE_RE = re.compile(r"\b[a-z]+(?:_[a-z0-9]+)+\b")
 _CAMEL_RE = re.compile(r"\b[a-z]+(?:[A-Z][a-z0-9]+)+\b")
@@ -40,6 +38,7 @@ def structural_features(p: Payload) -> dict[str, float]:
     t = p.text or ""
     n_chars = len(t)
     lines = t.splitlines() or [""]
+    n_lines = len(lines)
     idents = _IDENT_RE.findall(t)
     comments = _COMMENT_RE.findall(t)
     comment_text = " ".join(m if isinstance(m, str) else m[0] for m in comments)
@@ -53,27 +52,27 @@ def structural_features(p: Payload) -> dict[str, float]:
         "max_line_len": float(max((len(l) for l in lines), default=0)),
         "entropy": _shannon(t),
 
-        "n_b64_blobs": float(len(_B64_RE.findall(t))),
-        "n_hex_blobs": float(len(_HEX_RE.findall(t))),
-        "n_urls": float(len(_URL_RE.findall(t))),
-        "has_encoding_field": 1.0 if p.encoding else 0.0,
+        "b64_per_line": _safe_div(len(_B64_RE.findall(t)), n_lines),
+        "hex_per_line": _safe_div(len(_HEX_RE.findall(t)), n_lines),
+        "urls_per_line": _safe_div(len(_URL_RE.findall(t)), n_lines),
 
-        "n_idents": float(len(idents)),
+        "idents_per_line": _safe_div(len(idents), n_lines),
         "unique_ident_ratio": _safe_div(len(set(idents)), len(idents)),
         "mean_ident_len": _safe_div(sum(len(i) for i in idents), len(idents)),
         "snake_ratio": _safe_div(len(snake), len(snake) + len(camel)),
-        "n_controller_tokens": float(sum(1 for m in _CONTROLLER_RE.findall(t)
-                                         if m.upper() not in _CONTROLLER_NOISE)),
+        "n_controller_tokens": float(len(_CONTROLLER_RE.findall(t))),
 
         "comment_ratio": _safe_div(len(comment_text), n_chars),
-        "n_comments": float(len(comments)),
+        "comments_per_line": _safe_div(len(comments), n_lines),
         "mean_comment_len": _safe_div(len(comment_text), max(1, len(comments))),
 
-        "n_try": float(len(_TRY_RE.findall(t))),
-        "indent_tabs": float(t.count("\t")),
-        "indent_spaces_4": float(len(re.findall(r"^    ", t, re.M))),
-        "indent_spaces_2": float(len(re.findall(r"^  (?! )", t, re.M))),
-        "semicolon_ratio": _safe_div(t.count(";"), max(1, len(lines))),
+        "try_per_line": _safe_div(len(_TRY_RE.findall(t)), n_lines),
+        "tab_line_ratio": _safe_div(len(re.findall(r"^\t", t, re.M)), n_lines),
+        "indent4_line_ratio": _safe_div(len(re.findall(r"^    ", t, re.M)), n_lines),
+        "indent2_line_ratio": _safe_div(len(re.findall(r"^  (?! )", t, re.M)), n_lines),
+        "semicolon_ratio": _safe_div(t.count(";"), n_lines),
+        "blank_line_ratio": _safe_div(sum(1 for l in lines if not l.strip()), n_lines),
+        "trailing_ws_ratio": _safe_div(sum(1 for l in lines if l != l.rstrip()), n_lines),
     }
     return feats
 
@@ -84,17 +83,21 @@ def helper_fingerprints(p: Payload, top: int = 0) -> list[str]:
 
 
 def controller_tokens(p: Payload) -> list[str]:
-    return sorted(set(m for m in _CONTROLLER_RE.findall(p.text or "")
-                      if m.upper() not in _CONTROLLER_NOISE))
+    return sorted(set(m.upper() for m in _CONTROLLER_RE.findall(p.text or "")))
 
 
 FEATURE_NAMES = sorted(structural_features(Payload(rec_id="_", text="x=1")).keys())
 
+# for clustering: no size features, no controller names
+CLUSTER_FEATURES = [n for n in FEATURE_NAMES
+                    if n not in ("len_chars", "n_lines", "n_controller_tokens")]
 
-def feature_matrix(payloads: list[Payload]):
+
+def feature_matrix(payloads: list[Payload], names: Optional[list[str]] = None):
     import numpy as np
+    names = list(names or FEATURE_NAMES)
     rows = []
     for p in payloads:
         f = structural_features(p)
-        rows.append([f[name] for name in FEATURE_NAMES])
-    return np.asarray(rows, dtype=float), list(FEATURE_NAMES)
+        rows.append([f[n] for n in names])
+    return np.asarray(rows, dtype=float), names

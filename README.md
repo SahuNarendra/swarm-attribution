@@ -20,7 +20,7 @@ Python tooling to analyse the Swarm Traces release (redacted.jsonl.gz) from the 
 **MODULES**
 
 1. swarmattr/loader.py - read records, build payload families, controller labels, corpus summary
-2. swarmattr/features.py - 22 structural and stylistic features per payload
+2. swarmattr/features.py - 23 structural and stylistic features per payload, 20 used for clustering
 3. swarmattr/synth.py - synthetic payloads with known actors, for testing
 4. swarmattr/cluster.py - HDBSCAN or agglomerative clustering, synthetic scorer
 5. swarmattr/adversary.py - style perturbation for the robustness test
