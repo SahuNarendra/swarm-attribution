@@ -22,7 +22,9 @@ Python tooling to analyse the Swarm Traces release (redacted.jsonl.gz) from the 
 **MODULES**
 
 1. swarmattr/loader.py - read records, build payload families, controller labels, corpus summary
-2. swarmattr/features.py - 23 structural and stylistic features per payload, 20 used for clustering
+2. swarmattr/features.py - two feature sets per payload
+   - structural: 23 style features, 20 used for clustering
+   - work signature: command heads, imports and helper names as a TF-IDF document
 3. swarmattr/synth.py - synthetic payloads with known actors, for testing
 4. swarmattr/cluster.py - HDBSCAN clustering, repeated-run interval, synthetic scorer
 5. swarmattr/adversary.py - style perturbation for the robustness test
@@ -42,8 +44,13 @@ Built before the Apart Research Swarm Alignment Hackathon (6 to 8 Nov 2026). Eve
 2. signed chain check, 1 Nov: the 27 G236 signed-command families (200 chars or more) are tighter in feature space than length-matched random samples (mean pairwise distance 2.10 vs 5.80, sd 0.97, 200 samples)
 3. labelled subset check, 1 Nov: on the 391 families that name exactly one known controller, a random forest on the clustering features identifies the controller at 79 percent accuracy, 5-fold, against a 30 percent majority baseline; blind HDBSCAN on the same rows does not recover the controllers (adjusted Rand below 0.06)
 4. blind HDBSCAN on all 53,405 families of 200 chars or more groups by payload type (json, html, code), not by actor
+5. AI Village check, 5 Nov (aidigestorg/ai-village, swarm village: 133 instances of one model, 47,897 bash commands of 120 chars or more, labelled by agent; analysis scripts kept outside this repo)
+   - style features do not separate the instances: 2.2 percent top-1 over 133 agents, against 1.4 percent majority and 0.8 percent random
+   - command vocabulary per session does: 30.1 percent top-1, 44.9 percent top-5
+   - two halves of the same session are close (cosine 0.41, AUC 0.86 against different agents); the same agent in another session is barely closer than a different agent (0.24 vs 0.21, AUC 0.56)
+   - this is why the work signature feature set was added to features.py before the sprint
 
-No actor count, calibration, perturbation curve or coordination graph result on the real data exists before the sprint.
+No actor count, calibration, perturbation curve, coordination graph result, or work signature result on Swarm Traces exists before the sprint.
 
 **LICENSE**
 

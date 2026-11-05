@@ -1,4 +1,6 @@
-"""Structural and stylistic features per payload. Describes how the text is written, not what it does.
+"""Per payload features. Two lenses:
+1. structural: how the text is written (23 features, 20 for clustering)
+2. work signature: what it reaches for (command heads, imports, helper names), as a TF-IDF document
 """
 
 from __future__ import annotations
@@ -18,6 +20,9 @@ _IDENT_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
 _FUNC_DEF_RE = re.compile(r"\b(?:def|function|func)\s+([A-Za-z_][A-Za-z0-9_]*)")
 _CONTROLLER_RE = re.compile(r"\b(" + "|".join(sorted(KNOWN_CONTROLLERS, key=len, reverse=True)) + r")\b", re.I)
 _TRY_RE = re.compile(r"\b(try|except|catch|finally|rescue)\b")
+_SEG_SPLIT_RE = re.compile(r"[;&|\n]+")
+_HEAD_RE = re.compile(r"[A-Za-z0-9_./\-]+")
+_IMPORT_RE = re.compile(r"^\s*(?:from\s+([A-Za-z_][\w.]*)\s+import|import\s+([A-Za-z_][\w.]*))", re.M)
 _SNAKE_RE = re.compile(r"\b[a-z]+(?:_[a-z0-9]+)+\b")
 _CAMEL_RE = re.compile(r"\b[a-z]+(?:[A-Z][a-z0-9]+)+\b")
 
@@ -101,3 +106,32 @@ def feature_matrix(payloads: list[Payload], names: Optional[list[str]] = None):
         f = structural_features(p)
         rows.append([f[n] for n in names])
     return np.asarray(rows, dtype=float), names
+
+
+def command_heads(text: str) -> list[str]:
+    heads = []
+    for seg in _SEG_SPLIT_RE.split(text or ""):
+        seg = seg.strip()
+        m = _HEAD_RE.match(seg)
+        if m and not re.match(r"\s*=(?!=)", seg[m.end():]):  # skip assignments
+            heads.append(m.group(0).split("/")[-1].lower())
+    return heads
+
+
+def work_signature(p: Payload) -> str:
+    t = p.text or ""
+    toks = ["cmd:" + h for h in command_heads(t)]
+    toks += ["imp:" + (a or b).split(".")[0].lower() for a, b in _IMPORT_RE.findall(t)]
+    toks += ["fn:" + n for n in helper_fingerprints(p)]
+    return " ".join(toks)
+
+
+def work_signature_matrix(payloads: list[Payload], min_df: int = 3, vectorizer=None):
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    docs = [work_signature(p) for p in payloads]
+    if vectorizer is None:
+        vectorizer = TfidfVectorizer(token_pattern=r"\S+", min_df=min_df, sublinear_tf=True)
+        X = vectorizer.fit_transform(docs)
+    else:
+        X = vectorizer.transform(docs)
+    return X, vectorizer

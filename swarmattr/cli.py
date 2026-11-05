@@ -15,7 +15,8 @@ from pathlib import Path
 from . import __version__
 from .loader import (load_records, build_families, families_as_payloads,
                      label_controllers, summarise, is_signed_command, Payload)
-from .features import feature_matrix, structural_features, FEATURE_NAMES, CLUSTER_FEATURES
+from .features import (feature_matrix, structural_features, FEATURE_NAMES, CLUSTER_FEATURES,
+                       work_signature, work_signature_matrix)
 from .cluster import cluster, cluster_repeated, score_against_truth
 from .adversary import perturb
 from .graph import build_graph, containment_order, actor_projection
@@ -101,6 +102,8 @@ def cmd_selftest(args):
         _print(score_against_truth(res.labels, truth))
         rep = cluster_repeated(X, runs=10)
         print("3b. repeated:", rep.summary())
+        W, vec = work_signature_matrix(payloads, min_df=1)
+        print(f"3c. work signature: {W.shape[0]} x {W.shape[1]}, e.g. {work_signature(payloads[0])[:60]!r}")
         p0 = payloads[0]
         for s in (0.0, 0.5, 1.0):
             print(f"4. perturb {s:.2f}: len {len(p0.text)} -> {len(perturb(p0, s).text)}")
