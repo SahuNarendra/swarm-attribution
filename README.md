@@ -70,9 +70,9 @@ The sprint window on the sprint page is 6 to 8 Nov. Dated entries, newest last.
 6. shared-artefact graph between the named controllers
 7. anchor budget: with 10 anchored files per lineage, attribution with refusal is 88 percent precise on 45 percent of a lineage's files; with 20, 93 percent on 56 percent (threshold set so 5 percent of files from hidden lineages are wrongly attributed)
 8. impersonation: a file from lineage A dressed as lineage B (prepend one of B's files, add B's characteristic commands) is attributed to B 90 percent of the time without refusal. With the refusal threshold, 17 percent are still confidently blamed on B and under 1 percent are caught as A. 56 ordered pairs, 4-fold, 3 seeds
-9. tamper detector (two-style check, trained on self-made imitations): AUC 0.87 to 0.92, catches 39 to 59 percent of imitations at 5 percent false alarms. Cuts confident framing to about 7 percent. Does not close it
+9. tamper detector (two-style check, trained on self-made imitations): AUC 0.87 to 0.92, catches 39 to 59 percent of imitations at 5 percent false alarms. Measured together (s9c, same attack, new random draws): 16 percent confidently blamed on B with refusal alone, 8 percent with refusal plus the tamper check. Does not close it
 
-Scripts: analysis/s1_prep.py to s9b_tamper.py, figures from analysis/figs.py and figs2.py.
+Scripts: analysis/s1_prep.py to s9c_combined.py, figures from analysis/figs.py and figs2.py.
 
 **LICENSE**
 

@@ -13,7 +13,8 @@ Analysis scripts behind the numbers in the top level README and the report. Run 
 9. s8_anchors.py - anchor budget: precision and coverage against anchored files per lineage
 10. s9_impersonate.py - lineage A dressed as lineage B: framed, caught, refused
 11. s9b_tamper.py - two-style detector against the imitations
-12. figs.py, figs2.py - figures 1 to 6
+12. s9c_combined.py - refusal and the tamper check together on the same imitations
+13. figs.py, figs2.py - figures 1 to 6
 
 **SHARED**
 
