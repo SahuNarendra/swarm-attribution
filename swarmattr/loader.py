@@ -11,7 +11,6 @@ from __future__ import annotations
 import gzip
 import io
 import json
-import re
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -114,7 +113,7 @@ def build_families(records: list[Record]) -> list[Family]:
 
     by_id = {r.rec_id: r for r in records}
     fams: dict[str, Family] = {}
-    # roots: every payload, plus any recovered_text with no parent (32,827 in the release)
+    # roots: every payload, plus any recovered_text with no parent (32,826 in the release)
     for r in records:
         if r.kind == "payload" or (r.kind == "recovered_text" and not r.parent_id):
             fams[r.rec_id] = Family(root=r)

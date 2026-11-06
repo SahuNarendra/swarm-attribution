@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import numpy as np
 from dataclasses import dataclass, field
 
 
@@ -34,7 +35,6 @@ class RepeatResult:
 
 def _scale(X, min_std: float = 1e-3):
     # drop near-constant columns first; a few outliers in a dead column otherwise dominate distances
-    import numpy as np
     from sklearn.preprocessing import StandardScaler
     X = np.asarray(X, dtype=float)
     keep = X.std(axis=0) > min_std
@@ -42,7 +42,6 @@ def _scale(X, min_std: float = 1e-3):
 
 
 def cluster(X, method: str = "hdbscan", min_cluster_size: int = 5, min_samples: int | None = None) -> ClusterResult:
-    import numpy as np
     Xs = _scale(X)
 
     if method == "hdbscan":

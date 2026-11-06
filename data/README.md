@@ -6,7 +6,7 @@ Place redacted.jsonl.gz here. It is ignored by git.
 2. cite - id plus hash
 3. kind - payload, response or recovered_text
 4. parent_id - parent record id or null
-5. tags - semicolon separated, sparse (34 distinct), e.g. article-evidence;g236-command;g23619cmd.bin;command-000001
+5. tags - semicolon separated, sparse (37 records carry tags, 34 distinct tag strings, 30 distinct tags), e.g. article-evidence;g236-command;g23619cmd.bin;command-000001
 6. text - decoded content
 7. time_utc - empty on every record
 

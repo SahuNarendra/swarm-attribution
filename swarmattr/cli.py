@@ -13,8 +13,7 @@ import tempfile
 from pathlib import Path
 
 from . import __version__
-from .loader import (load_records, build_families, families_as_payloads,
-                     label_controllers, summarise, is_signed_command, Payload)
+from .loader import (load_records, build_families, label_controllers, summarise, is_signed_command, Payload)
 from .features import (feature_matrix, structural_features, FEATURE_NAMES, CLUSTER_FEATURES,
                        work_signature, work_signature_matrix)
 from .cluster import cluster, cluster_repeated, score_against_truth
