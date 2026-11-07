@@ -1,6 +1,7 @@
 """summarise PATH             corpus stats
 feasibility PATH           per controller feature means and separation ratio
 signed PATH --out FILE     write the g236-command records to FILE, in tag order
+attribute PATH             attribute families to lineages with refusal; anchors from --anchors or controller names
 selftest                   synthetic end to end run
 """
 
@@ -19,6 +20,7 @@ from .features import (feature_matrix, structural_features, FEATURE_NAMES, CLUST
 from .cluster import cluster, cluster_repeated, score_against_truth
 from .adversary import perturb
 from .graph import build_graph, containment_order, actor_projection
+from .attribute import Attributor
 from . import synth
 
 
@@ -87,6 +89,37 @@ def cmd_signed(args):
         print(f"  {r.rec_id}  {r.kind:<15} {len(r.text):>6}  {r.tags}")
 
 
+def cmd_attribute(args):
+    """Anchors: a JSON lines file of {"id": record id, "lineage": name}, or, without --anchors, every family
+    that names exactly one known controller. Every other family of --min-chars or more is scored.
+    Output: one JSON line per family: id, lineage (null = refused), score, runner-up."""
+    from collections import Counter
+    recs = load_records(args.path, limit=args.limit)
+    fams = [f for f in build_families(recs) if f.n_chars >= args.min_chars]
+    anchor_of = {}
+    if args.anchors:
+        for line in open(args.anchors, encoding="utf-8"):
+            if line.strip():
+                d = json.loads(line); anchor_of[d["id"]] = d["lineage"]
+    else:
+        for f in fams:
+            labs = label_controllers(f.text, f.tags)
+            if len(labs) == 1: anchor_of[f.rec_id] = labs[0]
+    cnt = Counter(anchor_of.values())
+    keep = {c for c, n in cnt.items() if n >= args.min_anchors}
+    anchors = [f for f in fams if anchor_of.get(f.rec_id) in keep]
+    rest = [f for f in fams if f.rec_id not in anchor_of]
+    print(f"anchors: {len(anchors)} families, {len(keep)} lineages {dict(sorted((c, cnt[c]) for c in keep))}; scoring {len(rest)} families; threshold {args.threshold}", file=sys.stderr)
+    att = Attributor(threshold=args.threshold).fit([Payload(rec_id=f.rec_id, text=f.text) for f in anchors], [anchor_of[f.rec_id] for f in anchors])
+    verdicts = att.attribute([Payload(rec_id=f.rec_id, text=f.text) for f in rest])
+    out = open(args.out, "w", encoding="utf-8") if args.out else sys.stdout
+    for v in verdicts:
+        out.write(json.dumps({"id": v.rec_id, "lineage": v.lineage, "score": round(v.score, 3), "runner_up": v.second, "runner_up_score": round(v.second_score, 3)}) + "\n")
+    if args.out: out.close()
+    got = Counter(v.lineage for v in verdicts)
+    print(f"attributed {sum(n for c, n in got.items() if c)} of {len(verdicts)} ({sum(n for c, n in got.items() if c) / max(1, len(verdicts)):.2%}); refused {got.get(None, 0)}; by lineage {dict(sorted((c, n) for c, n in got.items() if c))}", file=sys.stderr)
+
+
 def cmd_selftest(args):
     print(f"swarmattr {__version__} selftest\n")
     with tempfile.TemporaryDirectory() as td:
@@ -107,6 +140,11 @@ def cmd_selftest(args):
         for s in (0.0, 0.5, 1.0):
             print(f"4. perturb {s:.2f}: len {len(p0.text)} -> {len(perturb(p0, s).text)}")
         actor_of = {p.rec_id: synth.true_actor(p) for p in payloads}
+        tr, te = payloads[0::2], payloads[1::2]
+        att = Attributor(threshold=0.5).fit(tr, [actor_of[p.rec_id] for p in tr])
+        vs = att.attribute(te)
+        ok = sum(1 for v in vs if v.lineage == actor_of[v.rec_id]); ref = sum(1 for v in vs if v.refused)
+        print(f"4b. attribute with refusal: {ok} of {len(vs)} right, {ref} refused")
         g = build_graph(payloads, actor_of)
         ap = actor_projection(g)
         print(f"5. graph {g.number_of_nodes()} nodes {g.number_of_edges()} edges; actor projection {ap.number_of_edges()} edges")
@@ -124,6 +162,10 @@ def main(argv=None):
     f.set_defaults(func=cmd_feasibility)
     g = sub.add_parser("signed"); g.add_argument("path"); g.add_argument("--out", required=True)
     g.set_defaults(func=cmd_signed)
+    a = sub.add_parser("attribute"); a.add_argument("path"); a.add_argument("--anchors"); a.add_argument("--out")
+    a.add_argument("--threshold", type=float, default=0.66); a.add_argument("--min-chars", type=int, default=200)
+    a.add_argument("--min-anchors", type=int, default=8); a.add_argument("--limit", type=int)
+    a.set_defaults(func=cmd_attribute)
     t = sub.add_parser("selftest"); t.add_argument("--n", type=int, default=60)
     t.set_defaults(func=cmd_selftest)
     args = ap.parse_args(argv)

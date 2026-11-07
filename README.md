@@ -18,6 +18,8 @@ Python tooling to analyse the Swarm Traces release (redacted.jsonl.gz) from the 
    - per controller feature means and separation ratio
 4. python -m swarmattr.cli signed data/redacted.jsonl.gz --out ../notes/g236-signed.jsonl
    - the 28 records tagged g236-command, written outside the repo
+5. python -m swarmattr.cli attribute data/redacted.jsonl.gz --out verdicts.jsonl
+   - attribution with refusal: anchors are the families naming one controller (or --anchors FILE with {"id","lineage"} lines); one JSON line per other family with lineage, score, runner-up; lineage null means refused
 
 **ANALYSIS**
 
@@ -33,7 +35,8 @@ analysis/ holds the scripts behind every number below. See analysis/README.md fo
 4. swarmattr/cluster.py - HDBSCAN clustering, repeated-run interval, synthetic scorer
 5. swarmattr/adversary.py - style perturbation for the robustness test
 6. swarmattr/graph.py - actor to artefact graph, containment ordering by fragmentation
-7. swarmattr/cli.py - entry point
+7. swarmattr/attribute.py - attribution with refusal: two lenses averaged, threshold from the open-set test
+8. swarmattr/cli.py - entry point
 
 **DATA**
 
@@ -72,7 +75,15 @@ The sprint window on the sprint page is 6 to 8 Nov. Dated entries, newest last.
 8. impersonation: a file from lineage A dressed as lineage B (prepend one of B's files, add B's characteristic commands) is attributed to B 90 percent of the time without refusal. With the refusal threshold, 17 percent are still confidently blamed on B and under 1 percent are caught as A. 56 ordered pairs, 4-fold, 3 seeds
 9. tamper detector (two-style check, trained on self-made imitations): AUC 0.87 to 0.92, catches 39 to 59 percent of imitations at 5 percent false alarms. Measured together (s9c, same attack, new random draws): 16 percent confidently blamed on B with refusal alone, 8 percent with refusal plus the tamper check. Does not close it
 
-Scripts: analysis/s1_prep.py to s9c_combined.py, figures from analysis/figs.py and figs2.py.
+7 Nov (day 2).
+
+10. signed chain as ground truth (s10): the 27 signed G236 families carry the G236 name, so every run above had them in training. With them removed, and the defender trained on name labels only, 3 percent are recognised as G236 (G236's other files are mostly a different document type) and with refusal 0 of 27 are confidently blamed on another lineage. Given k signed files as anchors, the rest are recognised at 76 percent (k=2), 97 percent (k=5), 100 percent (k=10), still 0 percent wrong and confident; the same after dropping near-copies of the anchors (s10b)
+11. anchor budget with the hidden pair rotated over all 28 pairs (s8b): precision 95 percent on 33 percent of files at 10 anchors, 97 percent on 40 percent at 20 (2.5 to 97.5 percentiles 82 to 100 and 84 to 100)
+12. intervals for the headline numbers (s11): open set at T=0.66, known attributed 38 percent (25 to 58), precision 100 percent (99.5 to 100), strangers wrongly attributed 5 percent (0 to 28, the hidden lineages are small); impersonation and tamper figures with bootstrap intervals over the 56 pairs
+13. adaptive impersonation (s12): the attacker trains a surrogate defender on the public files, tries 16 disguises per file and keeps the one the surrogate scores highest for B. Against the real defender: framed 99 percent without refusal, 50 percent confidently framed with refusal, 30 percent confidently framed and missed by the tamper check (fixed attack: 90, 17, 8 percent). Refusal plus the tamper check hold against a fixed attacker, not an adaptive one
+14. swarmattr/attribute.py and the attribute command: anchors in, per family a lineage with a score or a refusal out. On the full dataset it reproduces the corpus pass of s5 (65 of 53,014 attributed at T=0.66) in about 20 seconds
+
+Scripts: analysis/s1_prep.py to s12_adaptive.py, figures from analysis/figs.py and figs2.py.
 
 **LICENSE**
 

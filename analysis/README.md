@@ -14,7 +14,11 @@ Analysis scripts behind the numbers in the top level README and the report. Run 
 10. s9_impersonate.py - lineage A dressed as lineage B: framed, caught, refused
 11. s9b_tamper.py - two-style detector against the imitations
 12. s9c_combined.py - refusal and the tamper check together on the same imitations
-13. figs.py, figs2.py - figures 1 to 6
+13. s10_signed.py, s10b_signed_anchors.py - signed G236 chain held out of training as ground truth; k signed files as anchors
+14. s8b_anchors_rotated.py - anchor budget with every pair of lineages hidden in turn
+15. s11_intervals.py - intervals for the open-set, impersonation and tamper numbers
+16. s12_adaptive.py - adaptive impersonation against a surrogate defender, with refusal and the tamper check
+17. figs.py, figs2.py - figures 1 to 6
 
 **SHARED**
 
