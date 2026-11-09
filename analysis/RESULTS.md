@@ -28,6 +28,7 @@ T = 0.66 is set once in s5_anchored.py (open-set test, 2 of 8 lineages hidden, 2
 | 4.4 tamper check, AUC 0.87 to 0.92 | s9b_tamper.py, s9c_combined.py | s9b_out.pkl, s9c_out.pkl |
 | 4.4 fixed vs adaptive attacker (Table 2, Figure 1C) | s12_adaptive.py | s12_out.pkl |
 | 5 joint-monitor model (Table A4); Table 3 requirements summarise 4.1 to 4.5 | s18_bridge_fixed_t.py | s18_out.pkl |
+| Table 3 (i): most active collusion.wiki name, 317 edits from 96 /16 networks | s19_cw_prep.py | stdout |
 | 4.5 and Table A7, collusion.wiki | s19_cw_prep.py, s20_cw_attr.py | s20_cw_attr_out.pkl |
 | 4.1 AI Village assigned teams (AUC 0.51, 13.7 percent) | s21_aiv_teams.py | s21_out.pkl |
 | 4.5 and Table A7, co-editing names (AUC 0.89 / 0.86, 75 percent) | s22_cw_cowork.py | s22_out.pkl |
