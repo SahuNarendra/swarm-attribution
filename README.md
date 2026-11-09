@@ -105,7 +105,9 @@ Day 3, continued (8 Nov AoE; 9 Nov in IST). Checks raised by an independent revi
 23. who worked together (s22, collusion.wiki): names that edited at least one common page write alike on the pages they did not share (vocabulary cosine 0.35 vs 0.09, AUC 0.89; 0.86 when both names were active in the same period); for 75 percent of a name's five most similar names the two co-edited a page (chance 31 percent)
 24. assigned teams on AI Village (s21; swarm village, 133 agents of one model in 12 teams): not recoverable from commands. Same-team agent profiles vs different-team AUC 0.51; team of an agent never seen in training 13.7 percent (chance 8.3); blind clustering adjusted Rand 0.00; anchors do not help. Data: computer_use_turns, computer_use_sessions and agents for the swarm village from aidigestorg/ai-village (gated) in data/aiv-swarm/ (not committed)
 
-Scripts: analysis/s1_prep.py to s22_cw_cowork.py, figures from analysis/figs.py, figs2.py, figs3.py, figs4.py and fig_ladder.py. analysis/RESULTS.md maps every table and figure in the report to its script.
+25. groups and topic (s23, collusion.wiki): within pairs of near-identical topic (the authors' page families), vocabulary still separates co-editors (AUC 0.87) while topic does not (0.58). Blind clustering of names from text on pages no other name edited recovers the 4 co-editing communities partly (adjusted Rand 0.39 at 8 clusters; topic alone 0.13; random 95th percentile 0.04); one anchor name per community assigns 55 percent of the rest correctly (topic alone 34, chance 25)
+
+Scripts: analysis/s1_prep.py to s23_cw_groups.py, figures from analysis/figs.py, figs2.py, figs3.py, figs4.py and fig_ladder.py. analysis/RESULTS.md maps every table and figure in the report to its script.
 
 **AI USE**
 

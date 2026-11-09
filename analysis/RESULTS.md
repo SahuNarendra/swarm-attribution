@@ -28,6 +28,7 @@ T = 0.66 is set once in s5_anchored.py (open-set test, 2 of 8 lineages hidden, 2
 | 4.7 and Table A7, collusion.wiki | s19_cw_prep.py, s20_cw_attr.py | s20_cw_attr_out.pkl |
 | 4.1 AI Village assigned teams (AUC 0.51, 13.7 percent) | s21_aiv_teams.py | s21_out.pkl |
 | 4.7 and Table A7, co-editing names (AUC 0.89 / 0.86, 75 percent) | s22_cw_cowork.py | s22_out.pkl |
+| 4.7 and Table A7, topic control and group recovery (0.87 / 0.58, ARI 0.39, 55 percent) | s23_cw_groups.py | stdout |
 | Appendix B containment | s7_contain.py | stdout |
 | Appendix B same-lineage pairs | s3a_artefacts.py, s3b_pairs.py | stdout |
 | Figure 1 | fig_ladder.py | fig0_ladder.png |

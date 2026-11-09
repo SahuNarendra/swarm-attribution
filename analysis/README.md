@@ -29,6 +29,7 @@ Analysis scripts behind the numbers in the top level README and the report. Run 
 25. s17b_pairs.py - per-pair comparisons from s17 for every regime
 27. s21_aiv_teams.py - AI Village swarm village: are assigned teams recoverable from commands (no)
 28. s22_cw_cowork.py - collusion.wiki: do names that co-edited pages write alike (yes)
+29. s23_cw_groups.py - collusion.wiki: topic control, blind recovery of co-editing groups, anchors
 26. s19_cw_prep.py, s20_cw_attr.py - a second swarm, collusion.wiki: units, then top-1, session vs day-apart similarity, open set and anchors (data in data/collusion-wiki/, not committed)
 
 **SHARED**
