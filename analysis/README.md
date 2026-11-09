@@ -27,6 +27,8 @@ Analysis scripts behind the numbers in the top level README and the report. Run 
 23. s17_active_fixed_t.py - s13 with the fixed threshold reported next to the calibrated one, and the per-pair comparisons
 24. s18_bridge_fixed_t.py - s14 with the fixed-threshold grouping rates and Kitaoka et al.'s two joint rates
 25. s17b_pairs.py - per-pair comparisons from s17 for every regime
+27. s21_aiv_teams.py - AI Village swarm village: are assigned teams recoverable from commands (no)
+28. s22_cw_cowork.py - collusion.wiki: do names that co-edited pages write alike (yes)
 26. s19_cw_prep.py, s20_cw_attr.py - a second swarm, collusion.wiki: units, then top-1, session vs day-apart similarity, open set and anchors (data in data/collusion-wiki/, not committed)
 
 **SHARED**

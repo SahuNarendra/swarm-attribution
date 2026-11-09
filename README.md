@@ -102,7 +102,10 @@ Day 3, continued (8 Nov AoE; 9 Nov in IST). Checks raised by an independent revi
 
 22. a second swarm, collusion.wiki (s19, s20; Von Arx et al. 2026, 14,591 edits by agents on a small German wiki, each with the name that saved it). Units are the text each edit added, 200+ chars, names deleted, splits grouped by page: 2,316 units from 119 names. Top-1: vocabulary 31.8 percent, style 18.8, both 25.1, majority 5.1. Same name within 1 hour vs different names: AUC 0.81; same name a day or more apart: 0.44. Open set (23 names hidden, T = 0.41 fixed on separate repetitions): 11 percent of known units attributed at 89 percent precision, 5.5 percent of hidden-name units wrongly claimed. Anchors for a hidden name: top-1 recognition 6 percent with 1, 28 percent with 10; 1 to 3 percent wrong and confident. Data: unzip full-wiki-logs.zip from https://collusion.wiki/explorer/download into data/collusion-wiki/ (not committed)
 
-Scripts: analysis/s1_prep.py to s20_cw_attr.py, figures from analysis/figs.py, figs2.py, figs3.py, figs4.py and fig_ladder.py. analysis/RESULTS.md maps every table and figure in the report to its script.
+23. who worked together (s22, collusion.wiki): names that edited at least one common page write alike on the pages they did not share (vocabulary cosine 0.35 vs 0.09, AUC 0.89; 0.86 when both names were active in the same period); for 75 percent of a name's five most similar names the two co-edited a page (chance 31 percent)
+24. assigned teams on AI Village (s21; swarm village, 133 agents of one model in 12 teams): not recoverable from commands. Same-team agent profiles vs different-team AUC 0.51; team of an agent never seen in training 13.7 percent (chance 8.3); blind clustering adjusted Rand 0.00; anchors do not help. Data: computer_use_turns, computer_use_sessions and agents for the swarm village from aidigestorg/ai-village (gated) in data/aiv-swarm/ (not committed)
+
+Scripts: analysis/s1_prep.py to s22_cw_cowork.py, figures from analysis/figs.py, figs2.py, figs3.py, figs4.py and fig_ladder.py. analysis/RESULTS.md maps every table and figure in the report to its script.
 
 **AI USE**
 
