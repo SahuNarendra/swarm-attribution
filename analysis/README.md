@@ -18,19 +18,20 @@ Analysis scripts behind the numbers in the top level README and the report. Run 
 14. s8b_anchors_rotated.py - anchor budget with every pair of lineages hidden in turn
 15. s11_intervals.py - intervals for the open-set, impersonation and tamper numbers
 16. s12_adaptive.py - adaptive impersonation against a surrogate defender, with refusal and the tamper check
-17. figs.py, figs2.py, figs3.py - figures 1 to 8
+17. figs.py, figs2.py - appendix figures A1 to A5; figs3.py - signed-chain and impersonation figures from earlier drafts
 18. s13_active_anchors.py - which anchors to verify first: random, coverage (greedy medoids), diversity (farthest first), least sure, most sure; signed chain and hidden pair rotated
 19. s14_bridge.py - expected joint-monitor detection from Kitaoka et al.'s published rates and this repo's grouping rates (a model, assumptions in the file)
-20. figs4.py - figure 9 (active anchoring); fig_ladder.py - figure 0 (what the artefacts give back, by level)
+20. figs4.py - report Figure 2 (which anchors to verify); fig_headline.py - report Figure 1 (signed chain, anchor budget, impersonation); fig_ladder.py, fig_method.py - figures from earlier drafts
 21. s15_checks.py - document type alone as a classifier, and labels with names inside hex strings ignored (run with argument hex or boundary)
 22. s16_anchors_fixed_t.py - s8b at the fixed threshold T = 0.66
 23. s17_active_fixed_t.py - s13 with the fixed threshold reported next to the calibrated one, and the per-pair comparisons
 24. s18_bridge_fixed_t.py - s14 with the fixed-threshold grouping rates and Kitaoka et al.'s two joint rates
 25. s17b_pairs.py - per-pair comparisons from s17 for every regime
+26. s19_cw_prep.py, s20_cw_attr.py - a second swarm, collusion.wiki: units, then top-1, session vs day-apart similarity, open set and anchors (data in data/collusion-wiki/, not committed)
 27. s21_aiv_teams.py - AI Village swarm village: are assigned teams recoverable from commands (no)
 28. s22_cw_cowork.py - collusion.wiki: do names that co-edited pages write alike (yes)
 29. s23_cw_groups.py - collusion.wiki: topic control, blind recovery of co-editing groups, anchors
-26. s19_cw_prep.py, s20_cw_attr.py - a second swarm, collusion.wiki: units, then top-1, session vs day-apart similarity, open set and anchors (data in data/collusion-wiki/, not committed)
+30. s24_signed_filetype.py - signed chain with the same anchors, file type only (a confound check: 0 percent at every k); s10b_signed_anchors.py --dedup is the near-copy check
 
 **SHARED**
 

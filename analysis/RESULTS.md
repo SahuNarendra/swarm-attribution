@@ -1,5 +1,9 @@
 Where each number in the report comes from. Run the scripts from the repo root with the dataset at data/redacted.jsonl.gz; outputs go to analysis/out/.
 
+**NAMES**
+
+The scripts call the anchor rule that picks the most typical files of a lineage (greedy medoids) "coverage"; the report calls it "most typical". "Attributed" in the logs is "named" in the report, and "hidden-lineage files" are "strangers".
+
 **THRESHOLDS**
 
 T = 0.66 is set once in s5_anchored.py (open-set test, 2 of 8 lineages hidden, 20 repetitions: 5 percent of the hidden lineages' files pass it; T = 0.59 for 10 percent). s5, s9, s9c, s10, s10b, s12, s15, s16 and s17 use this fixed T. s8, s8b and s13 instead set the threshold in each run from the hidden files (an oracle calibration); the report quotes them only as the oracle comparison.
