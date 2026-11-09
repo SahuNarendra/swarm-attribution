@@ -15,6 +15,7 @@ T = 0.66 is set once in s5_anchored.py (open-set test, 2 of 8 lineages hidden, 2
 | 4.1 AI Village (2.2, 30.1, AUC 0.86 / 0.56; Figures A2, A5 right) | pre-sprint runs, 5 Nov | top level README, PRIOR WORK |
 | 4.2 signed chain, 3.3 percent top-1, 0 of 27, controls 0.7 / 77 | s10_signed.py | s10_out.pkl |
 | 4.2 anchors k = 1 to 10 (Figure 1A, Table A6) | s10b_signed_anchors.py | s10b_out.pkl |
+| 4.2 file-type-only control with the same anchors (0 percent at every k) | s24_signed_filetype.py | s24_out.pkl |
 | 4.2 near-copy control (96.6 percent at five anchors, 6.3 percent named at ten) | s10b_signed_anchors.py --dedup | s10b_dedup_out.pkl |
 | 4.4 defender retrained on disguised files (81.8, 25 percent named at 100 percent precision) | s6_robust.py | run.log |
 | 3.3 threshold T = 0.66 from the open-set test (38 percent [25, 58] named, 5 percent [0, 28] strangers; Figure A3); 4.6 corpus, 65 of 53,023 | s5_anchored.py, s11_intervals.py | s5_out.pkl |
