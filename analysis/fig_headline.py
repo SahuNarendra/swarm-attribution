@@ -22,7 +22,7 @@ for k, t in zip(K, top):
     if k in (0, 2, 5): ax.text(k - 0.25, t + 4, f"{t:.0f}", fontsize=10.5, color=C1, weight="bold", ha="right")
 ax.set_xticks(K); ax.set_ylim(-3, 112); ax.set_xlabel("anchors (signed files given)"); ax.set_ylabel("% of the other signed files")
 ax.legend(frameon=True, framealpha=1, edgecolor="white", fontsize=10.5, loc="center right", bbox_to_anchor=(1.0, 0.42))
-ax.set_title("A. Signed chain: anchors recover it", loc="left", fontsize=12.5, weight="bold", color=INK)
+ax.set_title("A. Signed chain: best guess recovers", loc="left", fontsize=12.5, weight="bold", color=INK)
 
 # B: anchor budget at fixed T
 b = load("s16_out.pkl"); A = sorted(b)
