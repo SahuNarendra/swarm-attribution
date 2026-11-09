@@ -42,12 +42,12 @@ ax.text(0.81, prec[-1] - 6, "precision on known lineages", color=INK, fontsize=8
 ax.text(0.83, att[-1] - 2, "known files attributed", color=INK, fontsize=8)
 ax.text(0.81, unk[-1] + 2, "unknown files wrongly attributed", color=INK, fontsize=8)
 ax.axvline(0.66, color=GREY, ls="--", lw=1); ax.text(0.68, 52, "5% stranger\nerror", color=INK2, fontsize=8)
-ax.set_xlim(0, 1.0); ax.set_ylim(0, 105); ax.set_xlabel("confidence threshold"); ax.set_ylabel("%")
+ax.set_xlim(0, 0.85); ax.set_ylim(0, 105); ax.set_xlabel("confidence threshold"); ax.set_ylabel("%")
 finish(ax, "Anchored attribution with refusal (2 lineages hidden, 20 reps)")
 fig.savefig(out("fig3_refusal_tradeoff.png"))
 
 # Fig 4: robustness
-lv = ["none", "rename\nidentifiers", "+ reindent", "+ strip\ncomments", "+ strip\nnames"]
+lv = ["none", "rename\nidentifiers", "+ reindent", "+ strip\ncomments", "+ strip names\n(already removed)"]
 st = [78.5, 68.1, 64.1, 63.1, 63.1]; wk = [73.8, 53.0, 53.0, 53.0, 53.0]; bo = [82.8, 72.9, 72.2, 72.0, 72.0]; adv = [82.8, 81.7, 81.8, 81.8, 81.8]
 fig, ax = plt.subplots(figsize=(6.4, 3.4)); x = range(5)
 ax.plot(x, bo, color=C3, lw=2, marker="o", ms=4); ax.plot(x, st, color=C1, lw=2, marker="o", ms=4); ax.plot(x, wk, color=C2, lw=2, marker="o", ms=4)

@@ -54,7 +54,7 @@ print("lost per lineage:", {k: old[k] - new.get(k, 0) for k in old if old[k] != 
 print("gained per lineage:", {k: new[k] - old.get(k, 0) for k in new if new[k] > old.get(k, 0)})
 
 
-def cv(labels, use_type=False):
+def cv(labels, use_type=False, balanced=True):
     idx = [i for i, l in enumerate(labels) if l]
     y = np.array([labels[i] for i in idx])
     acc, base = [], []
@@ -64,7 +64,7 @@ def cv(labels, use_type=False):
             itr = [idx[j] for j in tr]; ite = [idx[j] for j in te]
             if use_type:
                 oh = OneHotEncoder(handle_unknown="ignore").fit(T[itr])
-                m = LogisticRegression(max_iter=3000, class_weight="balanced").fit(oh.transform(T[itr]), y[tr])
+                m = LogisticRegression(max_iter=3000, class_weight="balanced" if balanced else None).fit(oh.transform(T[itr]), y[tr])
                 acc.append((m.predict(oh.transform(T[ite])) == y[te]).mean())
             else:
                 sc = StandardScaler().fit(X[itr])
@@ -80,6 +80,8 @@ def cv(labels, use_type=False):
 orig = [r["label"] for r in rows]
 a, s, b, n, k = cv(orig, use_type=True)
 print(f"\n(c) DOCUMENT TYPE ONLY, original labels: {a:.3f} +- {s:.3f} (majority {b:.3f}; {n} families, {k} lineages)")
+a, s, b, n, k = cv(orig, use_type=True, balanced=False)
+print(f"    DOCUMENT TYPE ONLY, unbalanced:        {a:.3f} +- {s:.3f} (majority {b:.3f})")
 a, s, b, n, k = cv(orig)
 print(f"    two lenses, original labels:           {a:.3f} +- {s:.3f} (majority {b:.3f})")
 a, s, b, n, k = cv(clean)

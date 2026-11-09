@@ -11,7 +11,9 @@ plt.rcParams.update({"font.size": 10, "axes.edgecolor": "#c9c8c3", "axes.labelco
 # Fig 7: the signed chain, recognised as anchors are added (s10b)
 res = load("s10b_out.pkl")
 K = sorted(res)
-top = [100 * res[k]["top1"][0] for k in K]; lo = [100 * res[k]["top1"][1] for k in K]; hi = [100 * res[k]["top1"][2] for k in K]
+top = [100 * res[k]["top1"][0] for k in K]
+top[0] = 100 * np.mean(load("s10_out.pkl")["res"]["top1"])  # k = 0: the 10-seed held-out test of s10 (3.3 percent), as in the text and Table A6
+lo = [100 * res[k]["top1"][1] for k in K]; hi = [100 * res[k]["top1"][2] for k in K]
 att = [100 * (res[k]["a5"][0] if res[k]["a5"][0] == res[k]["a5"][0] else 0) for k in K]
 wrong = [100 * res[k]["w5"][0] for k in K]
 fig, ax = plt.subplots(figsize=(5.6, 3.2))
@@ -19,7 +21,7 @@ ax.fill_between(K, lo, hi, color=C1, alpha=0.15, lw=0)
 ax.plot(K, top, color=C1, lw=2, marker="o", ms=4, label="signed files recognised as G236 (top-1)")
 ax.plot(K, att, color=C3, lw=2, marker="o", ms=4, label="attributed with refusal (5% stranger setting)")
 ax.plot(K, wrong, color=C2, lw=2, marker="o", ms=4, label="wrongly and confidently attributed")
-for k, t in zip(K, top): ax.text(k, t + 3, f"{t:.1f}" if t < 10 else f"{t:.0f}", ha="center", fontsize=8, color=INK)
+for k, t in zip(K, top): ax.text(k + 0.15, t + 4, f"{t:.1f}" if t < 10 else f"{t:.0f}", ha="center", fontsize=8, color=INK)
 ax.axhline(12.5, color=GREY, lw=1, ls="--"); ax.text(10.3, 14, "chance (1 of 8)", fontsize=8, color=GREY, ha="right")
 ax.set_xticks(K); ax.set_xlabel("signed files given as anchors"); ax.set_ylabel("% of the remaining signed files"); ax.set_ylim(-3, 110)
 ax.legend(frameon=False, fontsize=8, loc="center right")

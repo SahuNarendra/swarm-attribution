@@ -10,7 +10,7 @@ T = 0.66 is set once in s5_anchored.py (open-set test, 2 of 8 lineages hidden, 2
 |---|---|---|
 | 4.1 two lenses, 75.0 / 69.7 / 80.7, baseline 30.4 (Figure A5 left) | s2b_ens.py | stdout |
 | 4.1 within one file type (76.7 other, 91.1 / 94.2 Python) | s2_lenses.py | stdout |
-| 4.1 file type only 13.1, hex-string label check 80.9 | s15_checks.py | s15_hex_out.pkl, stdout |
+| 4.1 file type only 29.4 (13.1 class-balanced), hex-string label check 80.9; word-boundary check 82.2 | s15_checks.py (argument hex or boundary) | stdout |
 | 4.1 blind counts, purity 0.44, 163 groups | s4_count.py, s4b_group.py | s4_out.pkl, s4b_out.pkl |
 | 4.1 AI Village (2.2, 30.1, AUC 0.86 / 0.56; Figures A2, A5 right) | pre-sprint runs, 5 Nov | top level README, PRIOR WORK |
 | 4.2 signed chain, 3.3 percent top-1, 0 of 27, controls 0.7 / 77 | s10_signed.py | s10_out.pkl |
@@ -19,6 +19,7 @@ T = 0.66 is set once in s5_anchored.py (open-set test, 2 of 8 lineages hidden, 2
 | 4.3 anchor budget at fixed T (Table A2) | s16_anchors_fixed_t.py | s16_out.pkl |
 | 4.3 oracle comparison (33 percent at 95 percent precision) | s8b_anchors_rotated.py | s8b_out.pkl |
 | 4.4 anchor selection, hidden pairs at fixed T and signed chain (Figure 3, Table A5) | s17_active_fixed_t.py | s17_out.pkl |
+| 4.4 per-pair counts (28 of 28 top-1, 2 of 28 with refusal) | s17b_pairs.py | stdout |
 | 4.5 disguise (Figure A1) | s6_robust.py, s6b_unknown.py | s6_out.pkl |
 | 4.6 impersonation by move (Figure A4) | s9_impersonate.py | s9_out.pkl |
 | 4.6 tamper check, AUC 0.87 to 0.92 | s9b_tamper.py, s9c_combined.py | s9b_out.pkl, s9c_out.pkl |

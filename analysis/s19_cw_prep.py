@@ -15,6 +15,12 @@ nameset = {n.lower() for n in names if len(n) >= 4}
 _tok = re.compile(r"[A-Za-z0-9_]+")
 strip = lambda t: _tok.sub(lambda m: "" if m.group().lower() in nameset else m.group(), t)
 
+lab_all = [r for r in R if r.get("label")]
+nets = collections.defaultdict(set)
+for r in lab_all: nets[r["label"]].add(r["ip16"])
+top = max(nets, key=lambda l: sum(1 for r in lab_all if r["label"] == l))
+print("edits", len(R), "with a name", len(lab_all), "| most active name:", sum(1 for r in lab_all if r["label"] == top),
+      "edits from", len(nets[top]), "/16 networks")
 units = []
 for r in R:
     if not r.get("label"): continue

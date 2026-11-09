@@ -26,7 +26,8 @@ Analysis scripts behind the numbers in the top level README and the report. Run 
 22. s16_anchors_fixed_t.py - s8b at the fixed threshold T = 0.66
 23. s17_active_fixed_t.py - s13 with the fixed threshold reported next to the calibrated one, and the per-pair comparisons
 24. s18_bridge_fixed_t.py - s14 with the fixed-threshold grouping rates and Kitaoka et al.'s two joint rates
-25. s19_cw_prep.py, s20_cw_attr.py - a second swarm, collusion.wiki: units, then top-1, session vs day-apart similarity, open set and anchors (data in data/collusion-wiki/, not committed)
+25. s17b_pairs.py - per-pair comparisons from s17 for every regime
+26. s19_cw_prep.py, s20_cw_attr.py - a second swarm, collusion.wiki: units, then top-1, session vs day-apart similarity, open set and anchors (data in data/collusion-wiki/, not committed)
 
 **SHARED**
 
