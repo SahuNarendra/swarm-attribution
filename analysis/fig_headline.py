@@ -37,7 +37,7 @@ for i, k in enumerate(A):
         ax.text(i, m(k, 4) + 4, f"{m(k, 4):.1f}", ha="center", fontsize=10.5, color=C2, weight="bold")
         ax.text(i, m(k, 1) - 10, f"{m(k, 1):.0f}", ha="center", fontsize=10.5, color=C1, weight="bold")
 ax.set_xticks(x); ax.set_xticklabels([str(k) for k in A]); ax.set_ylim(-3, 112)
-ax.set_xlabel("verified files per known lineage"); ax.set_ylabel("%")
+ax.set_xlabel("verified files per known lineage"); ax.set_ylabel("% of files")
 ax.legend(frameon=True, framealpha=1, edgecolor="white", fontsize=10.5, loc="center", bbox_to_anchor=(0.58, 0.64))
 ax.set_title("B. The cost of anchors (T = 0.66)", loc="left", fontsize=12.5, weight="bold", color=INK)
 

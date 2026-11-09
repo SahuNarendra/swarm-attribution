@@ -8,14 +8,14 @@ T = 0.66 is set once in s5_anchored.py (open-set test, 2 of 8 lineages hidden, 2
 
 | Report item | Script | Output |
 |---|---|---|
-| 4.1 two lenses, 75.0 / 69.7 / 80.7, baseline 30.4 (Figure A5 left) | s2b_ens.py | stdout |
+| 4.1 two feature sets (s2b ensemble; s2_lenses prints a different 'both' from an earlier style-only setup), 75.0 / 69.7 / 80.7, baseline 30.4 (Figure A5 left) | s2b_ens.py | stdout |
 | 4.1 within one file type (76.7 other, 91.1 / 94.2 Python) | s2_lenses.py | stdout |
 | 4.1 file type only 29.4 (13.1 class-balanced), hex-string label check 80.9; word-boundary check 82.2 | s15_checks.py (argument hex or boundary) | stdout |
 | 4.1 blind counts, purity 0.44, 163 groups | s4_count.py, s4b_group.py | s4_out.pkl, s4b_out.pkl |
 | 4.1 AI Village (2.2, 30.1, AUC 0.86 / 0.56; Figures A2, A5 right) | pre-sprint runs, 5 Nov | top level README, PRIOR WORK |
 | 4.2 signed chain, 3.3 percent top-1, 0 of 27, controls 0.7 / 77 | s10_signed.py | s10_out.pkl |
 | 4.2 anchors k = 1 to 10 (Figure 1A, Table A6) | s10b_signed_anchors.py | s10b_out.pkl |
-| 4.3 open set, 38 percent [25, 58], 5 percent [0, 28], corpus 65 of 53,023 (Figure A3) | s5_anchored.py, s11_intervals.py | s5_out.pkl |
+| 3.3 threshold T = 0.66 from the open-set test (38 percent [25, 58] named, 5 percent [0, 28] strangers; Figure A3); 4.6 corpus, 65 of 53,023 | s5_anchored.py, s11_intervals.py | s5_out.pkl |
 | 4.3 anchor budget at fixed T (Table A2, Figure 1B) | s16_anchors_fixed_t.py | s16_out.pkl |
 | 4.3 oracle comparison (33 percent at 95 percent precision) | s8b_anchors_rotated.py | s8b_out.pkl |
 | 4.3 anchor selection, hidden pairs at fixed T and signed chain (Figure 2, Table A5) | s17_active_fixed_t.py | s17_out.pkl |
@@ -28,7 +28,7 @@ T = 0.66 is set once in s5_anchored.py (open-set test, 2 of 8 lineages hidden, 2
 | 4.5 and Table A7, collusion.wiki | s19_cw_prep.py, s20_cw_attr.py | s20_cw_attr_out.pkl |
 | 4.1 AI Village assigned teams (AUC 0.51, 13.7 percent) | s21_aiv_teams.py | s21_out.pkl |
 | 4.5 and Table A7, co-editing names (AUC 0.89 / 0.86, 75 percent) | s22_cw_cowork.py | s22_out.pkl |
-| 4.5 and Table A7, topic control and group recovery (0.87 / 0.58, ARI 0.39, 55 percent) | s23_cw_groups.py | stdout |
+| 4.5 and Table A7, topic control and group recovery (topic bins 0.70 to 0.87 against 0.56 to 0.64; ARI 0.25 at 4 clusters, 0.39 at 8; 55 percent) | s23_cw_groups.py | stdout |
 | Appendix B containment | s7_contain.py | stdout |
 | Appendix B same-lineage pairs | s3a_artefacts.py, s3b_pairs.py | stdout |
 | Table 1 (main results) | summary of the rows above | |
