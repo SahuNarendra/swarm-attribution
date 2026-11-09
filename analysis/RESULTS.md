@@ -40,6 +40,7 @@ T = 0.66 is set once in s5_anchored.py (open-set test, 2 of 8 lineages hidden, 2
 | Appendix B containment | s7_contain.py | stdout |
 | Appendix B same-lineage pairs | s3a_artefacts.py, s3b_pairs.py | stdout |
 | Table 1 (main results) | summary of the rows above | |
+| Code and Data, prior work statement | files and runs listed under PRIOR WORK in the top level README | |
 | Figure 1 (headline: signed chain, anchor budget, impersonation) | fig_headline.py | fig_headline.png |
 | Method overview (earlier drafts) | fig_method.py | fig_method.png |
 | Signed chain with bands (earlier drafts) | figs3.py | fig7_signed_anchors.png |

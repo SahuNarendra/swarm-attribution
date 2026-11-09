@@ -45,7 +45,7 @@ analysis/ holds the scripts behind every number below. See analysis/README.md fo
 
 **PRIOR WORK (before 6 Nov 2026)**
 
-Built before the Apart Research Swarm Alignment Hackathon (6 to 8 Nov 2026). Everything committed before 6 Nov is prior work and is declared as such in the submission.
+Built before the Apart Research Swarm Alignment Hackathon (6 to 8 Nov 2026), from 1 Nov, and first committed to this repository on 6 Nov together with the first sprint results. The files and runs listed below are prior work and are declared as such in the submission.
 
 Files written before the sprint: swarmattr/loader.py, swarmattr/features.py (style features; work signature added 5 Nov), swarmattr/synth.py, swarmattr/cluster.py, swarmattr/adversary.py, swarmattr/graph.py, swarmattr/cli.py (selftest, summarise, feasibility, signed). Written during the sprint: swarmattr/attribute.py, the attribute command, and everything in analysis/.
 
@@ -93,7 +93,7 @@ Day 3 (8 Nov):
 16. bridge to joint monitoring (s14): a model, not a measurement, from Kitaoka et al.'s published rates (per-trajectory 6.7 percent, joint 41 percent with the grouping given) and the s8b grouping rates. Superseded by item 21
 17. ladder figure (fig_ladder.py): what the artefacts give back at model, lineage, trajectory and instance level; every number from a script above or the declared prior work
 
-Day 3, continued (8 Nov AoE; 9 Nov in IST). Checks raised by an independent review of the draft:
+Day 3, continued (8 Nov AoE; 9 Nov in IST). Checks added after reviewing the draft:
 
 18. label and file-type checks (s15): a classifier given only the document type scores 29.4 percent (13.1 class-balanced; majority 30.4), so the two lenses are not reading file type. Ignoring controller names that sit inside runs of hex characters removes 5 BE90 labels; the two lenses then score 80.9 percent and the signed chain is unchanged (3 percent top-1, 0 wrong and confident). A stricter rule (no letter or digit next to the name, 248 labels) gives 82.2 percent
 19. anchor budget at the fixed threshold T = 0.66 (s16), hidden pair rotated: 10 anchors per lineage attribute 20 percent of known files at 99 percent precision, with 2.5 percent of hidden-lineage files wrongly attributed; 40 anchors, 40 percent at 99.9 percent

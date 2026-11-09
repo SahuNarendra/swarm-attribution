@@ -40,5 +40,5 @@ common.py (paths, name stripping, payload type), pairfeat.py (pair features), di
 **NOTES**
 
 0. RESULTS.md maps every table and figure in the report to its script, and explains which scripts use the fixed threshold and which recalibrate it per run.
-1. Every number in the README sprint log comes from one of these. Dates are in the git log.
+1. Every number in the README sprint log comes from one of these. Sprint-day dates are in the README sprint log; the git history starts on 6 Nov.
 2. The AI Village scripts (5 Nov) read the gated aidigestorg/ai-village files and are not included.
