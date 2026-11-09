@@ -14,11 +14,11 @@ T = 0.66 is set once in s5_anchored.py (open-set test, 2 of 8 lineages hidden, 2
 | 4.1 blind counts, purity 0.44, 163 groups | s4_count.py, s4b_group.py | s4_out.pkl, s4b_out.pkl |
 | 4.1 AI Village (2.2, 30.1, AUC 0.86 / 0.56; Figures A2, A5 right) | pre-sprint runs, 5 Nov | top level README, PRIOR WORK |
 | 4.2 signed chain, 3.3 percent top-1, 0 of 27, controls 0.7 / 77 | s10_signed.py | s10_out.pkl |
-| 4.2 anchors k = 1 to 10 (Figure 1, Table A6) | s10b_signed_anchors.py | s10b_out.pkl |
+| 4.2 anchors k = 1 to 10 (Figure 2, Table A6) | s10b_signed_anchors.py | s10b_out.pkl |
 | 4.3 open set, 38 percent [25, 58], 5 percent [0, 28], corpus 65 of 53,023 (Figure A3) | s5_anchored.py, s11_intervals.py | s5_out.pkl |
 | 4.3 anchor budget at fixed T (Table A2) | s16_anchors_fixed_t.py | s16_out.pkl |
 | 4.3 oracle comparison (33 percent at 95 percent precision) | s8b_anchors_rotated.py | s8b_out.pkl |
-| 4.4 anchor selection, hidden pairs at fixed T and signed chain (Figure 2, Table A5) | s17_active_fixed_t.py | s17_out.pkl |
+| 4.4 anchor selection, hidden pairs at fixed T and signed chain (Figure 3, Table A5) | s17_active_fixed_t.py | s17_out.pkl |
 | 4.4 per-pair counts (28 of 28 top-1, 2 of 28 with refusal) | s17b_pairs.py | stdout |
 | 4.5 disguise (Figure A1) | s6_robust.py, s6b_unknown.py | s6_out.pkl |
 | 4.6 impersonation by move (Figure A4) | s9_impersonate.py | s9_out.pkl |
@@ -32,8 +32,9 @@ T = 0.66 is set once in s5_anchored.py (open-set test, 2 of 8 lineages hidden, 2
 | Appendix B containment | s7_contain.py | stdout |
 | Appendix B same-lineage pairs | s3a_artefacts.py, s3b_pairs.py | stdout |
 | Table 1 (main results) | summary of the rows above | |
-| Figure 1 | figs3.py | fig7_signed_anchors.png |
+| Figure 1 (method) | fig_method.py | fig_method.png |
+| Figure 2 | figs3.py | fig7_signed_anchors.png |
 | Figures A1 to A5 | figs.py, figs2.py | fig1 to fig5 png |
-| Figure 2 | figs4.py | fig9_active_anchors.png |
+| Figure 3 | figs4.py | fig9_active_anchors.png |
 
 s13_active_anchors.py and s14_bridge.py are the first versions of s17 and s18 (oracle threshold, Kitaoka's rates at one operating point); they are kept for the record.
