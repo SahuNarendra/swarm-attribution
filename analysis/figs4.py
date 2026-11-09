@@ -20,18 +20,18 @@ for r in rules:
     m = [100 * np.nanmean(v) for v in V]
     lo = [100 * np.nanpercentile(v, 2.5) for v in V]; hi = [100 * np.nanpercentile(v, 97.5) for v in V]
     p = [np.nanmean(np.array(B[(k, r)], float)[:, 4]) for k in K]
-    ax[0].plot(K, m, marker="o", ms=4, lw=2, color=col[r], label=r)
+    ax[0].plot(K, m, marker="o", ms=4, lw=2, color=col[r], label=("most typical" if r == "coverage" else r))
     if r in ("random", "coverage"):
         ax[0].fill_between(K, lo, hi, color=col[r], alpha=0.12, linewidth=0)
-ax[0].set_xlabel("anchors per known lineage"); ax[0].set_ylabel("top-1 accuracy on known files (%)")
-ax[0].set_title("Hidden lineage pairs (28): top-1", loc="left", fontsize=11, fontweight="bold", color="#0b0b0b")
+ax[0].set_xlabel("anchors per known lineage"); ax[0].set_ylabel("best guess correct, known files (%)")
+ax[0].set_title("Hidden lineage pairs (28): best guess", loc="left", fontsize=11, fontweight="bold", color="#0b0b0b")
 ax[0].set_xticks(K); ax[0].set_ylim(0, 100); ax[0].legend(fontsize=8.5, frameon=False, loc="upper left", ncol=3); 
 
 KA = sorted({k for k, _ in A})
 for r in rules:
-    ax[1].plot(KA, [100 * A[(k, r)]["top1"] for k in KA], marker="o", ms=4, lw=2, color=col[r], label=r)
-ax[1].set_xlabel("signed anchors"); ax[1].set_ylabel("remaining signed files recognised (%)")
-ax[1].set_title("Signed G236 chain: top-1", loc="left", fontsize=11, fontweight="bold", color="#0b0b0b")
-ax[1].set_xticks(KA); ax[1].set_ylim(0, 105); ax[1].legend(fontsize=9, frameon=False, loc="lower right", ncol=2); 
+    ax[1].plot(KA, [100 * A[(k, r)]["top1"] for k in KA], marker="o", ms=4, lw=2, color=col[r], label=("most typical" if r == "coverage" else r))
+ax[1].set_xlabel("signed anchors"); ax[1].set_ylabel("best guess correct, signed files (%)")
+ax[1].set_title("Signed G236 chain: best guess", loc="left", fontsize=11, fontweight="bold", color="#0b0b0b")
+ax[1].set_xticks(KA); ax[1].set_ylim(0, 105); ax[1].legend(fontsize=9, frameon=True, framealpha=1, edgecolor="white", loc="lower right", ncol=2, bbox_to_anchor=(1.0, 0.02)); 
 plt.tight_layout(); plt.savefig(out("fig9_active_anchors.png"))
 print("wrote fig9_active_anchors.png")
