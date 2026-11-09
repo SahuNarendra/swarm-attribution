@@ -11,7 +11,7 @@ plt.rcParams.update({"font.size": 13, "axes.edgecolor": "#c9c8c3", "axes.labelco
 d = load("s17_out.pkl")
 A, B = d["A"], d["B"]
 rules = ("random", "coverage", "diversity", "least sure", "most sure")
-col = {"random": "#52514e", "coverage": "#2a78d6", "diversity": "#d3d2cd", "least sure": "#eb6834", "most sure": "#d3d2cd"}
+col = {"random": "#52514e", "coverage": "#2a78d6", "diversity": "#a9c7a0", "least sure": "#eb6834", "most sure": "#b9b8b3"}
 lw = {"random": 2.2, "coverage": 2.6, "diversity": 1.4, "least sure": 1.8, "most sure": 1.4}
 
 fig, ax = plt.subplots(1, 2, figsize=(10, 4.2))
@@ -21,7 +21,7 @@ for r in rules:
     m = [100 * np.nanmean(v) for v in V]
     lo = [100 * np.nanpercentile(v, 2.5) for v in V]; hi = [100 * np.nanpercentile(v, 97.5) for v in V]
     p = [np.nanmean(np.array(B[(k, r)], float)[:, 4]) for k in K]
-    ax[0].plot(K, m, marker="o", ms=4, lw=lw[r], color=col[r], label=("most typical" if r == "coverage" else r))
+    ax[0].plot(K, m, marker="o", ms=4, lw=lw[r], ls=("--" if r == "most sure" else "-"), color=col[r], label=("most typical" if r == "coverage" else r))
     if r in ("random", "coverage"):
         ax[0].fill_between(K, lo, hi, color=col[r], alpha=0.10, linewidth=0)
 ax[0].set_xlabel("anchors per known lineage"); ax[0].set_ylabel("best guess correct, known files (%)")
@@ -30,7 +30,7 @@ ax[0].set_xticks(K); ax[0].set_ylim(0, 100);
 
 KA = sorted({k for k, _ in A})
 for r in rules:
-    ax[1].plot(KA, [100 * A[(k, r)]["top1"] for k in KA], marker="o", ms=4, lw=lw[r], color=col[r], label=("most typical" if r == "coverage" else r))
+    ax[1].plot(KA, [100 * A[(k, r)]["top1"] for k in KA], marker="o", ms=4, lw=lw[r], ls=("--" if r == "most sure" else "-"), color=col[r], label=("most typical" if r == "coverage" else r))
 ax[1].set_xlabel("signed anchors"); ax[1].set_ylabel("best guess correct, signed files (%)")
 ax[1].set_title("Signed G236 chain: best guess", loc="left", fontsize=13, fontweight="bold", color="#0b0b0b")
 ax[1].set_xticks(KA); ax[1].set_ylim(0, 105)
