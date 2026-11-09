@@ -18,7 +18,15 @@ Analysis scripts behind the numbers in the top level README and the report. Run 
 14. s8b_anchors_rotated.py - anchor budget with every pair of lineages hidden in turn
 15. s11_intervals.py - intervals for the open-set, impersonation and tamper numbers
 16. s12_adaptive.py - adaptive impersonation against a surrogate defender, with refusal and the tamper check
-17. figs.py, figs2.py - figures 1 to 6
+17. figs.py, figs2.py, figs3.py - figures 1 to 8
+18. s13_active_anchors.py - which anchors to verify first: random, coverage (greedy medoids), diversity (farthest first), least sure, most sure; signed chain and hidden pair rotated
+19. s14_bridge.py - expected joint-monitor detection from Kitaoka et al.'s published rates and this repo's grouping rates (a model, assumptions in the file)
+20. figs4.py - figure 9 (active anchoring); fig_ladder.py - figure 0 (what the artefacts give back, by level)
+21. s15_checks.py - document type alone as a classifier, and labels with names inside hex strings ignored (run with argument hex or boundary)
+22. s16_anchors_fixed_t.py - s8b at the fixed threshold T = 0.66
+23. s17_active_fixed_t.py - s13 with the fixed threshold reported next to the calibrated one, and the per-pair comparisons
+24. s18_bridge_fixed_t.py - s14 with the fixed-threshold grouping rates and Kitaoka et al.'s two joint rates
+25. s19_cw_prep.py, s20_cw_attr.py - a second swarm, collusion.wiki: units, then top-1, session vs day-apart similarity, open set and anchors (data in data/collusion-wiki/, not committed)
 
 **SHARED**
 
@@ -26,5 +34,6 @@ common.py (paths, name stripping, payload type), pairfeat.py (pair features), di
 
 **NOTES**
 
+0. RESULTS.md maps every table and figure in the report to its script, and explains which scripts use the fixed threshold and which recalibrate it per run.
 1. Every number in the README sprint log comes from one of these. Dates are in the git log.
 2. The AI Village scripts (5 Nov) read the gated aidigestorg/ai-village files and are not included.

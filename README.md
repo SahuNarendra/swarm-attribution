@@ -45,7 +45,11 @@ analysis/ holds the scripts behind every number below. See analysis/README.md fo
 
 **PRIOR WORK (before 6 Nov 2026)**
 
-Built before the Apart Research Swarm Alignment Hackathon (6 to 8 Nov 2026). Everything committed before 6 Nov is prior work and is declared as such in the submission. Runs on the real data before the sprint, all recorded here:
+Built before the Apart Research Swarm Alignment Hackathon (6 to 8 Nov 2026). Everything committed before 6 Nov is prior work and is declared as such in the submission.
+
+Files written before the sprint: swarmattr/loader.py, swarmattr/features.py (style features; work signature added 5 Nov), swarmattr/synth.py, swarmattr/cluster.py, swarmattr/adversary.py, swarmattr/graph.py, swarmattr/cli.py (selftest, summarise, feasibility, signed). Written during the sprint: swarmattr/attribute.py, the attribute command, and everything in analysis/.
+
+Runs on the real data before the sprint, all recorded here:
 
 1. summarise and feasibility (descriptive statistics, per controller feature means)
 2. signed chain check, 1 Nov: the 27 G236 signed-command families (200 chars or more) are tighter in feature space than length-matched random samples (mean pairwise distance 2.10 vs 5.80, sd 0.97, 200 samples)
@@ -71,19 +75,38 @@ The sprint window on the sprint page is 6 to 8 Nov. Dated entries, newest last.
 4. attribution with refusal, 2 controllers held out as unknown
 5. disguise ladder from adversary.py applied to test files
 6. shared-artefact graph between the named controllers
-7. anchor budget: with 10 anchored files per lineage, attribution with refusal is 88 percent precise on 45 percent of a lineage's files; with 20, 93 percent on 56 percent (threshold set so 5 percent of files from hidden lineages are wrongly attributed)
+7. anchor budget, first version with one fixed hidden pair (PHASEONE and SC4): with 10 anchored files per lineage, attribution with refusal is 88 percent precise on 45 percent of a lineage's files; with 20, 93 percent on 56 percent (threshold set in each run so 5 percent of files from hidden lineages are wrongly attributed). Superseded by items 11 and 19
 8. impersonation: a file from lineage A dressed as lineage B (prepend one of B's files, add B's characteristic commands) is attributed to B 90 percent of the time without refusal. With the refusal threshold, 17 percent are still confidently blamed on B and under 1 percent are caught as A. 56 ordered pairs, 4-fold, 3 seeds
-9. tamper detector (two-style check, trained on self-made imitations): AUC 0.87 to 0.92, catches 39 to 59 percent of imitations at 5 percent false alarms. Measured together (s9c, same attack, new random draws): 16 percent confidently blamed on B with refusal alone, 8 percent with refusal plus the tamper check. Does not close it
+9. tamper detector (two-style check, trained on self-made imitations): AUC 0.87 to 0.92, catches 39 to 59 percent of imitations at 5 percent false alarms. Measured together (s9c, same attack, new random draws): 16 percent confidently blamed on B with refusal alone, 8 percent with refusal plus the tamper check. Does not close it. The report quotes 17 percent from the s12 run, which has bootstrap intervals
 
 7 Nov (day 2).
 
 10. signed chain as ground truth (s10): the 27 signed G236 families carry the G236 name, so every run above had them in training. With them removed, and the defender trained on name labels only, 3 percent are recognised as G236 (G236's other files are mostly a different document type) and with refusal 0 of 27 are confidently blamed on another lineage. Given k signed files as anchors, the rest are recognised at 76 percent (k=2), 97 percent (k=5), 100 percent (k=10), still 0 percent wrong and confident; the same after dropping near-copies of the anchors (s10b)
-11. anchor budget with the hidden pair rotated over all 28 pairs (s8b): precision 95 percent on 33 percent of files at 10 anchors, 97 percent on 40 percent at 20 (2.5 to 97.5 percentiles 82 to 100 and 84 to 100)
+11. anchor budget with the hidden pair rotated over all 28 pairs (s8b, threshold recalibrated in each run on the hidden files): precision 95 percent on 33 percent of files at 10 anchors, 97 percent on 40 percent at 20 (2.5 to 97.5 percentiles 82 to 100 and 84 to 100). Re-run at the fixed threshold in item 19
 12. intervals for the headline numbers (s11): open set at T=0.66, known attributed 38 percent (25 to 58), precision 100 percent (99.5 to 100), strangers wrongly attributed 5 percent (0 to 28, the hidden lineages are small); impersonation and tamper figures with bootstrap intervals over the 56 pairs
 13. adaptive impersonation (s12): the attacker trains a surrogate defender on the public files, tries 16 disguises per file and keeps the one the surrogate scores highest for B. Against the real defender: framed 99 percent without refusal, 50 percent confidently framed with refusal, 30 percent confidently framed and missed by the tamper check (fixed attack: 90, 17, 8 percent). Refusal plus the tamper check hold against a fixed attacker, not an adaptive one
-14. swarmattr/attribute.py and the attribute command: anchors in, per family a lineage with a score or a refusal out. On the full dataset it reproduces the corpus pass of s5 (65 of 53,014 attributed at T=0.66) in about 20 seconds
+14. swarmattr/attribute.py and the attribute command: anchors in, per family a lineage with a score or a refusal out. On the full dataset it reproduces the corpus pass of s5 (65 families attributed at T=0.66) in about 20 seconds
 
-Scripts: analysis/s1_prep.py to s12_adaptive.py, figures from analysis/figs.py and figs2.py.
+Day 3 (8 Nov):
+
+15. which anchors to verify first (s13, threshold recalibrated in each run): five rules for choosing anchors from a lineage's pool. With the hidden pair rotated, 5 coverage anchors (greedy medoids on the combined feature distance) attribute 35 percent of known files at 93 percent precision, 10 random anchors 34 percent at 95; coverage beats random in 24 of 28 pairs at the same budget. Least sure is worse than random (17 percent at 10 anchors), most sure worst (15). On the signed chain, coverage lifts top-1 recognition from 31 to 49 percent at 1 anchor and 75 to 87 at 2; from 3 anchors most sure is best (96 percent at 3, 100 at 5). Re-run at the fixed threshold in item 20
+16. bridge to joint monitoring (s14): a model, not a measurement, from Kitaoka et al.'s published rates (per-trajectory 6.7 percent, joint 41 percent with the grouping given) and the s8b grouping rates. Superseded by item 21
+17. ladder figure (fig_ladder.py): what the artefacts give back at model, lineage, trajectory and instance level; every number from a script above or the declared prior work
+
+Day 3, continued (8 Nov AoE; 9 Nov in IST). Checks raised by an independent review of the draft:
+
+18. label and file-type checks (s15): a classifier given only the document type scores 13.1 percent (majority 30.4), so the two lenses are not reading file type. Ignoring controller names that sit inside runs of hex characters removes 5 BE90 labels; the two lenses then score 80.9 percent and the signed chain is unchanged (3 percent top-1, 0 wrong and confident). A stricter rule (no letter or digit next to the name, 248 labels) gives 82.2 percent
+19. anchor budget at the fixed threshold T = 0.66 (s16), hidden pair rotated: 10 anchors per lineage attribute 20 percent of known files at 99 percent precision, with 2.5 percent of hidden-lineage files wrongly attributed; 40 anchors, 40 percent at 99.9 percent
+20. anchor selection at the fixed threshold (s17): coverage anchors give higher top-1 accuracy than random in all 28 pairs at 5 and 10 anchors (67 and 78 percent, against 55 and 67); 5 coverage anchors match 10 random ones on average. With refusal at T = 0.66 they attribute fewer files (11 percent at 10 anchors, against 20) at 100 percent precision with no hidden-lineage file attributed. Least sure and most sure are worse than random in top-1 accuracy in all 28 pairs at 10 anchors
+21. bridge model at the fixed threshold (s18), with Kitaoka et al.'s two joint rates (41 percent at the same threshold as the 6.7 percent, 31.7 percent at the same false-positive budget): with refusal, 10 random anchors give 13.6 percent expected detection (11.8); without refusal 29.6 percent (23.4), and 33.5 (26.2) with coverage anchors
+
+22. a second swarm, collusion.wiki (s19, s20; Von Arx et al. 2026, 14,591 edits by agents on a small German wiki, each with the name that saved it). Units are the text each edit added, 200+ chars, names deleted, splits grouped by page: 2,316 units from 119 names. Top-1: vocabulary 31.8 percent, style 18.8, both 25.1, majority 5.1. Same name within 1 hour vs different names: AUC 0.81; same name a day or more apart: 0.44. Open set (23 names hidden, T = 0.41 fixed on separate repetitions): 11 percent of known units attributed at 89 percent precision, 5.5 percent of hidden-name units wrongly claimed. Anchors for a hidden name: top-1 recognition 6 percent with 1, 28 percent with 10; 1 to 3 percent wrong and confident. Data: unzip full-wiki-logs.zip from https://collusion.wiki/explorer/download into data/collusion-wiki/ (not committed)
+
+Scripts: analysis/s1_prep.py to s20_cw_attr.py, figures from analysis/figs.py, figs2.py, figs3.py, figs4.py and fig_ladder.py. analysis/RESULTS.md maps every table and figure in the report to its script.
+
+**AI USE**
+
+Claude (Anthropic) was used as a research tool: to locate and summarise related work, to help write and debug the analysis scripts, and to assist with drafting, editing and checking the consistency of the report. All reported numbers are produced by scripts in the repository.
 
 **LICENSE**
 
