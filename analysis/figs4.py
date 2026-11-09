@@ -11,7 +11,8 @@ plt.rcParams.update({"font.size": 10, "axes.edgecolor": "#c9c8c3", "axes.labelco
 d = load("s17_out.pkl")
 A, B = d["A"], d["B"]
 rules = ("random", "coverage", "diversity", "least sure", "most sure")
-col = {"random": "#8a8984", "coverage": "#2a78d6", "diversity": "#1baf7a", "least sure": "#eb6834", "most sure": "#c99a1e"}
+col = {"random": "#52514e", "coverage": "#2a78d6", "diversity": "#d3d2cd", "least sure": "#eb6834", "most sure": "#d3d2cd"}
+lw = {"random": 2.2, "coverage": 2.6, "diversity": 1.4, "least sure": 1.8, "most sure": 1.4}
 
 fig, ax = plt.subplots(1, 2, figsize=(8.6, 3.4))
 K = sorted({k for k, _ in B})
@@ -20,16 +21,16 @@ for r in rules:
     m = [100 * np.nanmean(v) for v in V]
     lo = [100 * np.nanpercentile(v, 2.5) for v in V]; hi = [100 * np.nanpercentile(v, 97.5) for v in V]
     p = [np.nanmean(np.array(B[(k, r)], float)[:, 4]) for k in K]
-    ax[0].plot(K, m, marker="o", ms=4, lw=2, color=col[r], label=("most typical" if r == "coverage" else r))
+    ax[0].plot(K, m, marker="o", ms=4, lw=lw[r], color=col[r], label=("most typical" if r == "coverage" else r))
     if r in ("random", "coverage"):
-        ax[0].fill_between(K, lo, hi, color=col[r], alpha=0.12, linewidth=0)
+        ax[0].fill_between(K, lo, hi, color=col[r], alpha=0.10, linewidth=0)
 ax[0].set_xlabel("anchors per known lineage"); ax[0].set_ylabel("best guess correct, known files (%)")
 ax[0].set_title("Hidden lineage pairs (28): best guess", loc="left", fontsize=11, fontweight="bold", color="#0b0b0b")
 ax[0].set_xticks(K); ax[0].set_ylim(0, 100); ax[0].legend(fontsize=8.5, frameon=False, loc="upper left", ncol=3); 
 
 KA = sorted({k for k, _ in A})
 for r in rules:
-    ax[1].plot(KA, [100 * A[(k, r)]["top1"] for k in KA], marker="o", ms=4, lw=2, color=col[r], label=("most typical" if r == "coverage" else r))
+    ax[1].plot(KA, [100 * A[(k, r)]["top1"] for k in KA], marker="o", ms=4, lw=lw[r], color=col[r], label=("most typical" if r == "coverage" else r))
 ax[1].set_xlabel("signed anchors"); ax[1].set_ylabel("best guess correct, signed files (%)")
 ax[1].set_title("Signed G236 chain: best guess", loc="left", fontsize=11, fontweight="bold", color="#0b0b0b")
 ax[1].set_xticks(KA); ax[1].set_ylim(0, 105); ax[1].legend(fontsize=9, frameon=True, framealpha=1, edgecolor="white", loc="lower right", ncol=2, bbox_to_anchor=(1.0, 0.02)); 
