@@ -12,7 +12,7 @@ OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
 
 rows = [
     ("Model", "which model wrote it",
-     "one answer for ~95% of the swarm", "model fingerprinting (prior art)", "recoverable, uninformative", 0.25),
+     "one answer for ~95% of the swarm", "METR (2026); fingerprinting prior art", "recoverable, uninformative", 0.25),
     ("Lineage", "which controller",
      "80.7% top-1 vs 30.4% baseline;\nunseen chain refused (0 of 27);\n97% top-1 with 5 signed anchors",
      "this paper, 4.1 to 4.3", "recoverable with anchors", 0.85),

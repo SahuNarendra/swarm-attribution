@@ -19,7 +19,7 @@ wrong = [100 * res[k]["w5"][0] for k in K]
 fig, ax = plt.subplots(figsize=(5.6, 3.2))
 ax.fill_between(K, lo, hi, color=C1, alpha=0.15, lw=0)
 ax.plot(K, top, color=C1, lw=2, marker="o", ms=4, label="signed files recognised as G236 (top-1)")
-ax.plot(K, att, color=C3, lw=2, marker="o", ms=4, label="attributed with refusal (5% stranger setting)")
+ax.plot(K, att, color=C3, lw=2.5, marker="o", ms=5, zorder=5, label="attributed with refusal (5% stranger setting)")
 ax.plot(K, wrong, color=C2, lw=2, marker="o", ms=4, label="wrongly and confidently attributed")
 for k, t in zip(K, top): ax.text(k + 0.15, t + 4, f"{t:.1f}" if t < 10 else f"{t:.0f}", ha="center", fontsize=8, color=INK)
 ax.axhline(12.5, color=GREY, lw=1, ls="--"); ax.text(10.3, 14, "chance (1 of 8)", fontsize=8, color=GREY, ha="right")
